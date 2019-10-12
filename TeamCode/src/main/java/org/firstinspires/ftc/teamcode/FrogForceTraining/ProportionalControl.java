@@ -1,12 +1,14 @@
 package org.firstinspires.ftc.teamcode.FrogForceTraining;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 
-import org.firstinspires.ftc.teamcode.HardwarePushbot;
+import org.firstinspires.ftc.teamcode.PreSeasonTests.HardwarePushbot;
 
-@Autonomous(name="IMUDrive",group= "Example" )
+@Disabled
+@Autonomous(name="ProportionalControl",group= "Example" )
 public class ProportionalControl extends LinearOpMode {
 
     /* Declare OpMode member. */

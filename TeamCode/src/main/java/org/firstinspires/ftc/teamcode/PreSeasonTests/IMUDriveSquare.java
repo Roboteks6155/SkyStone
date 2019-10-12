@@ -1,29 +1,30 @@
-package org.firstinspires.ftc.teamcode;
+package org.firstinspires.ftc.teamcode.PreSeasonTests;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
 import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
-
-@Autonomous(name="IMUDrive",group= "Example" )
-public class IMUDrive extends LinearOpMode {
+@Disabled
+@Autonomous(name="IMUDriveSquare",group= "Example" )
+public class IMUDriveSquare extends LinearOpMode {
 
     /* Declare OpMode member. */
     HardwarePushbot robot = new HardwarePushbot();
 
     Orientation angles;
 
-     static final double GYRO_TOLERANCE = 3.0;
+     static final double GYRO_TOLERANCE = 5;
 
     @Override
     public void runOpMode() {
         robot.init(hardwareMap);
 
         waitForStart();
-        gyroDrive(30,.25,false);
+        gyroDrive(30,.25,true);
         robot.leftBackDrive.setPower(0);
         robot.rightBackDrive.setPower(0);
         robot.leftFrontDrive.setPower(0);
@@ -34,19 +35,70 @@ public class IMUDrive extends LinearOpMode {
         robot.rightFrontDrive.setPower(0.5);
         robot.leftBackDrive.setPower(0.5);
         robot.rightBackDrive.setPower(0.5);
-        sleep(3000);
+        sleep(2000);
 
         robot.leftFrontDrive.setPower(0);
         robot.rightFrontDrive.setPower(0);
         robot.leftBackDrive.setPower(0);
         robot.rightBackDrive.setPower(0);
-        sleep(3000);
+        sleep(2000);
 
-        gyroDrive(0,0.25,true);
+        gyroDrive(180,.25,false);
         robot.leftBackDrive.setPower(0);
         robot.rightBackDrive.setPower(0);
         robot.leftFrontDrive.setPower(0);
         robot.rightFrontDrive.setPower(0);
+        sleep(3000);
+
+        robot.leftFrontDrive.setPower(0.5);
+        robot.rightFrontDrive.setPower(0.5);
+        robot.leftBackDrive.setPower(0.5);
+        robot.rightBackDrive.setPower(0.5);
+        sleep(2000);
+
+        robot.leftFrontDrive.setPower(0);
+        robot.rightFrontDrive.setPower(0);
+        robot.leftBackDrive.setPower(0);
+        robot.rightBackDrive.setPower(0);
+        sleep(2000);
+
+        gyroDrive(90,.25,false);
+        robot.leftBackDrive.setPower(0);
+        robot.rightBackDrive.setPower(0);
+        robot.leftFrontDrive.setPower(0);
+        robot.rightFrontDrive.setPower(0);
+        sleep(3000);
+
+        robot.leftFrontDrive.setPower(0.5);
+        robot.rightFrontDrive.setPower(0.5);
+        robot.leftBackDrive.setPower(0.5);
+        robot.rightBackDrive.setPower(0.5);
+        sleep(2000);
+
+        robot.leftFrontDrive.setPower(0);
+        robot.rightFrontDrive.setPower(0);
+        robot.leftBackDrive.setPower(0);
+        robot.rightBackDrive.setPower(0);
+        sleep(2000);
+
+        gyroDrive(0,.25,false);
+        robot.leftBackDrive.setPower(0);
+        robot.rightBackDrive.setPower(0);
+        robot.leftFrontDrive.setPower(0);
+        robot.rightFrontDrive.setPower(0);
+        sleep(3000);
+
+        robot.leftFrontDrive.setPower(0.5);
+        robot.rightFrontDrive.setPower(0.5);
+        robot.leftBackDrive.setPower(0.5);
+        robot.rightBackDrive.setPower(0.5);
+        sleep(2000);
+
+        robot.leftFrontDrive.setPower(0);
+        robot.rightFrontDrive.setPower(0);
+        robot.leftBackDrive.setPower(0);
+        robot.rightBackDrive.setPower(0);
+        sleep(2000);
     }
 
     public void gyroDrive(double targetAngle, double speed, boolean turnCCW){
@@ -67,6 +119,7 @@ public class IMUDrive extends LinearOpMode {
 
                 telemetry.addData("Base Power", speed);
                 telemetry.addData("Angle", currentHeading);
+                telemetry.addData("Error", (Math.abs(targetAngle - currentHeading)));
                 telemetry.update();
             }
             robot.leftBackDrive.setPower(0);

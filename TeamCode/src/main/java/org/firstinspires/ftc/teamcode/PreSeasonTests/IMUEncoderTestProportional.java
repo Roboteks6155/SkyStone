@@ -1,6 +1,7 @@
-package org.firstinspires.ftc.teamcode;
+package org.firstinspires.ftc.teamcode.PreSeasonTests;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.util.ElapsedTime;
@@ -10,19 +11,20 @@ import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
 import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
 
-@Autonomous(name="IMUEncoderTest",group= "Example" )
-public class IMUEncoderTest extends LinearOpMode {
+@Disabled
+@Autonomous(name="IMUEncoderTestProportional",group= "Example" )
+public class IMUEncoderTestProportional extends LinearOpMode {
 
     /* Declare OpMode member. */
     HardwarePushbot robot = new HardwarePushbot();
 
     Orientation angles;
 
-
-
      static final double GYRO_TOLERANCE = 5;
 
     private ElapsedTime runtime = new ElapsedTime();
+
+
 
     @Override
     public void runOpMode() {
@@ -50,22 +52,89 @@ public class IMUEncoderTest extends LinearOpMode {
                 robot.leftFrontDrive.getCurrentPosition(),
                 robot.rightFrontDrive.getCurrentPosition());
         telemetry.update();
+        sleep(5000);
+
+        telemetry.addData("Left Back Encoder Counts", getLeftBackEncoderCounts() / robot.COUNTS_PER_INCH);
+        telemetry.addData("Right Encoder Counts", getRightBackEncoderCounts() / robot.COUNTS_PER_INCH);
+        telemetry.update();
 
         waitForStart();
 
-        encoderDrive(0.5,24,24,3);
+        if (opModeIsActive()) {
+            telemetry.addData("Left Back Encoder Inches", getLeftBackEncoderCounts() / robot.COUNTS_PER_INCH);
+            telemetry.addData("Right Encoder Inches", getRightBackEncoderCounts() / robot.COUNTS_PER_INCH);
+            telemetry.addData("current left back inches", robot.currentLeftBackInches);
+            telemetry.addData("current right back error", robot.rightBackError);
+            telemetry.addData("current right back power", robot.rightOutput);
+            telemetry.update();
+        }
+
+        driveStraightAndBackToPosition(40);
+       // encoderDrive(0.5,24,24,3);
         gyroDrive(-90,robot.TURN_SPEED,false);
-        encoderDrive(0.5,24,24,3);
+        driveStraightAndBackToPosition(40);
+        //encoderDrive(0.5,24,24,3);
         gyroDrive(180,robot.TURN_SPEED,false);
-        encoderDrive(0.5,24,24,3);
+        driveStraightAndBackToPosition(40);
+       // encoderDrive(0.5,24,24,3);
         gyroDrive(90,robot.TURN_SPEED,false);
-        encoderDrive(0.5,24,24,3);
+        driveStraightAndBackToPosition(40);
+       // encoderDrive(0.5,24,24,3);
         gyroDrive(0,robot.TURN_SPEED,false);
-        encoderDrive(0.5,24,24,3);
+        driveStraightAndBackToPosition(40);
+        // encoderDrive(0.5,24,24,3);
 
         telemetry.addData("Path", "Complete");
         telemetry.update();
 
+    }
+
+    public double getLeftBackEncoderCounts() { //Method returns the value of the encoders
+        return robot.leftBackDrive.getCurrentPosition();
+    }
+
+    public double getRightBackEncoderCounts() {
+        return robot.rightBackDrive.getCurrentPosition();
+    }
+
+
+    //method to drive straight and backwards using proportional control
+    public void driveStraightAndBackToPosition(double targetDistance) {
+        while (opModeIsActive() && !((Math.abs(robot.leftBackError) < robot.TOLERANCE) && (Math.abs(robot.rightBackError) < robot.TOLERANCE))) {
+
+            robot.PROPORTIONAL_CONSTANT = 0.5;
+
+            robot.currentLeftBackInches = getLeftBackEncoderCounts() / robot.COUNTS_PER_INCH;
+            robot.currentRightBackInches = getRightBackEncoderCounts() / robot.COUNTS_PER_INCH;
+
+            robot.leftBackError = targetDistance - robot.currentLeftBackInches;
+            robot.rightBackError = targetDistance - robot.currentRightBackInches;
+
+            robot.leftOutput = robot.PROPORTIONAL_CONSTANT * robot.leftBackError;
+            robot.rightOutput = robot.PROPORTIONAL_CONSTANT * robot.rightBackError;
+
+
+            // Normalize the values so neither exceed +/- 1.0
+            double max = Math.max(Math.abs(robot.rightOutput), Math.abs(robot.leftOutput));
+            if (max > 1.0)
+            {
+                robot.leftOutput /= max;
+                robot.rightOutput /= max;
+            }
+
+            robot.leftBackDrive.setPower(robot.leftOutput);
+            robot.rightBackDrive.setPower(robot.rightOutput);
+            robot.rightFrontDrive.setPower(robot.rightOutput);
+            robot.leftFrontDrive.setPower(robot.leftOutput);
+
+
+
+            sleep(100);
+        }
+
+        //resetting leftBackError to 10
+        robot.rightBackError = 10;
+        robot.leftBackError = 10;
     }
 
     /*
@@ -76,7 +145,7 @@ public class IMUEncoderTest extends LinearOpMode {
      *  2) Move runs out of time
      *  3) Driver stops the opmode running.
      */
-    public void encoderDrive(double speed,
+   /* public void encoderDrive(double speed,
                              double leftInches, double rightInches,
                              double timeoutS) {
         int newLeftBackTarget;
@@ -144,7 +213,7 @@ public class IMUEncoderTest extends LinearOpMode {
             sleep(250);   // optional pause after each move
         }
     }
-
+*/
 
     public void gyroDrive(double targetAngle, double speed, boolean turnCCW){
         double currentHeading = robot.imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES).firstAngle;

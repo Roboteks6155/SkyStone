@@ -4,9 +4,9 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 
-import org.firstinspires.ftc.teamcode.HardwarePushbot;
+import org.firstinspires.ftc.teamcode.PreSeasonTests.HardwarePushbot;
 
-@Autonomous(name="IMUDrive",group= "Example" )
+@Autonomous(name="EncoderTest2",group= "Example" )
 public class EncoderTest2 extends LinearOpMode {
 
     /* Declare OpMode member. */

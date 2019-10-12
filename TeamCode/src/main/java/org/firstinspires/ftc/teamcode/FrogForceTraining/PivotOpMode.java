@@ -1,15 +1,16 @@
 package org.firstinspires.ftc.teamcode.FrogForceTraining;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
 import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
-import org.firstinspires.ftc.teamcode.HardwarePushbot;
-
-@Autonomous(name="Pivot",group= "Example" )
+import org.firstinspires.ftc.teamcode.PreSeasonTests.HardwarePushbot;
+@Disabled
+@Autonomous(name="PivotOpMode",group= "Example" )
 public class PivotOpMode extends LinearOpMode {
 
     /* Declare OpMode member. */

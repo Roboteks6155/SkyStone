@@ -27,7 +27,7 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package org.firstinspires.ftc.teamcode;
+package org.firstinspires.ftc.teamcode.PreSeasonTests;
 
 import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -53,11 +53,14 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 public class HardwarePushbot
 {
     /* Public OpMode members. */
+
+    //Robot motor variables
     public DcMotor leftFrontDrive   = null;
     public DcMotor rightFrontDrive  = null;
     public DcMotor leftBackDrive = null;
     public DcMotor rightBackDrive = null;
 
+    //Encoder Variables
     public final double     DRIVE_SPEED             = 0.6;
     public final double     TURN_SPEED              = 0.5;
     public final double     COUNTS_PER_MOTOR_REV    = 1440 ;    // eg: TETRIX Motor Encoder
@@ -65,6 +68,17 @@ public class HardwarePushbot
     public final double     WHEEL_DIAMETER_INCHES   = 4.0 ;     // For figuring circumference
     public final double     COUNTS_PER_INCH         = (COUNTS_PER_MOTOR_REV * DRIVE_GEAR_REDUCTION) / (WHEEL_DIAMETER_INCHES * 3.1415);
 
+    //Proportional Control Variables
+    public double TOLERANCE = 5;
+    public double PROPORTIONAL_CONSTANT;
+    public double leftBackError = 10;
+    public double rightBackError = 10;
+    public double currentLeftBackInches;
+    public double currentRightBackInches;
+    public double rightOutput;
+    public double leftOutput;
+
+    // Robot Servo variables
     //public DcMotor  leftArm     = null;
     //public Servo    leftClaw    = null;
     //public Servo    rightClaw   = null;
