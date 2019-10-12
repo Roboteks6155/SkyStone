@@ -142,7 +142,7 @@ public class MecanumTeleOp extends LinearOpMode {
         }
 
     }
-
+ 
     // Easier to understand and make changes when considering turning and strafing right
     //This method is made to move the robot in all directions using the only two joysticks
     private void MecanumMove(double forward, double strafe, double rotate) {
