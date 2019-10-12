@@ -58,11 +58,10 @@ public class MecanumTeleOp extends LinearOpMode {
     /* Declare OpMode members. */
     HardwareSkystone robot           = new HardwareSkystone();   // Use a Pushbot's hardware
 
-
-
    // public Servo servoRepositioning = null;
     // double          clawOffset      = 0;                       // Servo mid position
    // final double    CLAW_SPEED      = 0.02 ;                   // sets rate to move servo
+    boolean xCurrentState = false, xPrevState = false;
 
     @Override
     public void runOpMode() {
@@ -114,11 +113,26 @@ public class MecanumTeleOp extends LinearOpMode {
             }
 
             //an IF loop to rotate the repositioning arm up and down
-        if (gamepad1.y){
+       /* if (gamepad1.y){
             robot.servoRepositioning.setPosition(0.32);
         } else if (gamepad1.a){
             robot.servoRepositioning.setPosition(0);
-        }
+        }*/
+
+
+            xCurrentState = gamepad1.x;
+
+            if(xCurrentState && (xCurrentState != xPrevState)){
+                robot.isReposition =!robot.isReposition;
+                if (robot.isReposition){
+                    robot.servoRepositioning.setPosition(robot.SERVO90);
+                }
+                else {
+                    robot.servoRepositioning.setPosition(robot.SERVO0);
+                }
+            }
+
+            xPrevState = xCurrentState;
 
            //an IF loop for the cascading claw
            if (gamepad2.dpad_left){
@@ -128,21 +142,23 @@ public class MecanumTeleOp extends LinearOpMode {
             }
 
            if (gamepad2.y){
-                robot.pickerArmServo.setPosition(0);
-            }
-            else if (gamepad2.a){
                 robot.pickerArmServo.setPosition(0.32);
             }
+            else if (gamepad2.a){
+                robot.pickerArmServo.setPosition(0);
+            }
             if (gamepad2.left_bumper) {
-                robot.pickerClawServo.setPosition(0);
+                robot.pickerClawServo.setPosition(0.15);
             }
             else if (gamepad2.right_bumper) {
-                robot.pickerClawServo.setPosition(0.32);
+                robot.pickerClawServo.setPosition(0);
             }
+
+
         }
 
     }
- 
+
     // Easier to understand and make changes when considering turning and strafing right
     //This method is made to move the robot in all directions using the only two joysticks
     private void MecanumMove(double forward, double strafe, double rotate) {

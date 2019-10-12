@@ -89,7 +89,9 @@ public class HardwareSkystone
     public Servo armServo;
     public Servo pickerArmServo;
     public Servo pickerClawServo;
-
+    public boolean isReposition = false;
+    public final double SERVO0 = 0.32;
+    public final double SERVO90 = 0;
     //Variables for using IMU/Gyro
     public BNO055IMU imu = null;
     static final public double GYRO_TOLERANCE = 5;
@@ -134,7 +136,9 @@ public class HardwareSkystone
         rightFrontDrive.setDirection(DcMotor.Direction.FORWARD);// Set to FORWARD if using AndyMark motors
         leftBackDrive.setDirection(DcMotor.Direction.REVERSE); // Set to REVERSE if using AndyMark motors
         rightBackDrive.setDirection(DcMotor.Direction.FORWARD);// Set to FORWARD if using AndyMark motors
+//        servoRepositioning.setDirection(Servo.Direction.REVERSE);// Set direction of the Servo
 
+        servoRepositioning.setPosition(SERVO0);
         // Set all motors to zero power
         leftFrontDrive.setPower(0);
         rightFrontDrive.setPower(0);
