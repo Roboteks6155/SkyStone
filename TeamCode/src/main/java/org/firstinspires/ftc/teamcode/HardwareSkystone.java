@@ -86,10 +86,11 @@ public class HardwareSkystone
 
     // Robot Servo variables
     public Servo servoRepositioning;
-    public Servo armServo;
+    public Servo servoCascadingClaw;
     public Servo pickerArmServo;
     public Servo pickerClawServo;
     public boolean isReposition = false;
+    public boolean isCascadingClaw = false;
     public final double SERVO0 = 0.32;
     public final double SERVO90 = 0;
     //Variables for using IMU/Gyro
@@ -125,7 +126,7 @@ public class HardwareSkystone
         cascadingHorizontalArm = hwMap.get(DcMotor.class, "cascadingHorizontalArm");
 
 
-        armServo = hwMap.get(Servo.class,"armServo");
+        servoCascadingClaw = hwMap.get(Servo.class,"CascadingClawServo");
         servoRepositioning = hwMap.get(Servo.class,"servoRepositioning");
         pickerArmServo = hwMap.get(Servo.class,"pickerArmServo");
         pickerClawServo =  hwMap.get(Servo.class,"pickerClawServo");

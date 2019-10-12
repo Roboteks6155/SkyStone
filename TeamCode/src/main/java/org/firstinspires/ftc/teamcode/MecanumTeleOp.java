@@ -61,8 +61,10 @@ public class MecanumTeleOp extends LinearOpMode {
    // public Servo servoRepositioning = null;
     // double          clawOffset      = 0;                       // Servo mid position
    // final double    CLAW_SPEED      = 0.02 ;                   // sets rate to move servo
-    boolean xCurrentState = false, xPrevState = false;
-
+    boolean xCurrentState = false, xPrevState = false;  // current and previous boolean values for x button gamepad 1
+    boolean x2CurrentState = false, x2PrevState = false;    // current and previous boolean values for x button gamepad 2
+    boolean bCurrentState = false, bPrevState = false;    // current and previous boolean values for b button gamepad 2
+    boolean yCurrentState = false, yPrevState = false;    // current and previous boolean values for y button gamepad 2
     @Override
     public void runOpMode() {
         /* Initialize the hardware variables.
@@ -119,27 +121,41 @@ public class MecanumTeleOp extends LinearOpMode {
             robot.servoRepositioning.setPosition(0);
         }*/
 
-
-            xCurrentState = gamepad1.x;
-
-            if(xCurrentState && (xCurrentState != xPrevState)){
-                robot.isReposition =!robot.isReposition;
-                if (robot.isReposition){
-                    robot.servoRepositioning.setPosition(robot.SERVO90);
+            // press x to make repositioning arm go up or down
+            xCurrentState = gamepad1.x; // gets current value of x
+            if(xCurrentState && (xCurrentState != xPrevState)){ //checks if current state is true and if previous state is not equal to current state
+                robot.isReposition =!robot.isReposition;    // reverse the value of isReposition EX: if isReposition true, then change to false
+                if (robot.isReposition){    //check if isReposition is true
+                    robot.servoRepositioning.setPosition(robot.SERVO90);    // make the repositioning arm go down (to 90 degrees)
                 }
-                else {
-                    robot.servoRepositioning.setPosition(robot.SERVO0);
+                else {  // if isReposition is true then do the conditon below
+                    robot.servoRepositioning.setPosition(robot.SERVO0);     // make the repositioning arm go up (to starting position(0 degrees))
                 }
             }
+            xPrevState = xCurrentState; // update the previous state
 
-            xPrevState = xCurrentState;
-
+            //Claw for placing
            //an IF loop for the cascading claw
-           if (gamepad2.dpad_left){
+           /*if (gamepad2.dpad_left){
                 robot.armServo.setPosition(0);
            } else if (gamepad2.dpad_right){
                 robot.armServo.setPosition(0.388888888888);
             }
+            */
+            // press y to make cascading claw to release or grab
+            yCurrentState = gamepad1.y;
+            if(yCurrentState && (yCurrentState != yPrevState )) {
+                robot.isCascadingClaw =!robot.isCascadingClaw;
+                if (robot.isCascadingClaw) {
+                    robot.servoCascadingClaw.setPosition(0.15);
+                }
+                else {
+                        robot.servoCascadingClaw.setPosition(0);
+
+                    }
+                }
+            }
+            yPrevState = yCurrentState;
 
            if (gamepad2.y){
                 robot.pickerArmServo.setPosition(0.32);
@@ -157,7 +173,7 @@ public class MecanumTeleOp extends LinearOpMode {
 
         }
 
-    }
+
 
     // Easier to understand and make changes when considering turning and strafing right
     //This method is made to move the robot in all directions using the only two joysticks
