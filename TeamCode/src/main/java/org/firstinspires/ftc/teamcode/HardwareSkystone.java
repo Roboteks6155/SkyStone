@@ -91,6 +91,8 @@ public class HardwareSkystone
     public Servo pickerClawServo;
     public boolean isReposition = false;
     public boolean isCascadingClaw = false;
+    public boolean ispickerClaw = false;
+    public boolean ispickerArm = false;
     public final double SERVO0 = 0.32;
     public final double SERVO90 = 0;
     //Variables for using IMU/Gyro

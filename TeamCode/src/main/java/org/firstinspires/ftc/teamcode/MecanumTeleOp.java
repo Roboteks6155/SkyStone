@@ -87,14 +87,13 @@ public class MecanumTeleOp extends LinearOpMode {
             double cascadingVerticalPower = gamepad2.left_stick_y;
 
             //variable that assigns what trigger will give power to each compliant wheel
-            double rightCollectorPower = gamepad1.right_trigger;
-            double leftCollectorPower = gamepad1.left_trigger;
+            double rightCollectorPower = gamepad2.right_trigger;
+            double leftCollectorPower = gamepad2.left_trigger;
 
             // makes it so that translation is on the left joystick and rotation/turning is on the right joystick
-            double forward = -gamepad1.left_stick_y/2;
-            double strafe = gamepad1.left_stick_x/2;
-            double rotate = gamepad1.right_stick_x/2;
-
+            double forward = -gamepad1.left_stick_y / 2;
+            double strafe = gamepad1.left_stick_x / 1.5;
+            double rotate = -gamepad1.right_stick_x / 2;
 
 
             //sets the power of the motor controlling the vertical movement
@@ -109,9 +108,9 @@ public class MecanumTeleOp extends LinearOpMode {
             MecanumMove(forward, strafe, rotate);
 
             //an IF loop to spin the compliant wheels outwards
-            if (gamepad1.b) {
-                robot.leftCollectorMotor.setPower(-leftCollectorPower);
-                robot.rightCollectorMotor.setPower(rightCollectorPower);
+            if (gamepad2.b) {
+                robot.leftCollectorMotor.setPower(-1);
+                robot.rightCollectorMotor.setPower(1);
             }
 
             //an IF loop to rotate the repositioning arm up and down
@@ -123,19 +122,18 @@ public class MecanumTeleOp extends LinearOpMode {
 
             // press x to make repositioning arm go up or down
             xCurrentState = gamepad1.x; // gets current value of x
-            if(xCurrentState && (xCurrentState != xPrevState)){ //checks if current state is true and if previous state is not equal to current state
-                robot.isReposition =!robot.isReposition;    // reverse the value of isReposition EX: if isReposition true, then change to false
-                if (robot.isReposition){    //check if isReposition is true
+            if (xCurrentState && (xCurrentState != xPrevState)) { //checks if current state is true and if previous state is not equal to current state
+                robot.isReposition = !robot.isReposition;    // reverse the value of isReposition EX: if isReposition true, then change to false
+                if (robot.isReposition) {    //check if isReposition is true
                     robot.servoRepositioning.setPosition(robot.SERVO90);    // make the repositioning arm go down (to 90 degrees)
-                }
-                else {  // if isReposition is true then do the conditon below
+                } else {  // if isReposition is true then do the conditon below
                     robot.servoRepositioning.setPosition(robot.SERVO0);     // make the repositioning arm go up (to starting position(0 degrees))
                 }
             }
             xPrevState = xCurrentState; // update the previous state
 
             //Claw for placing
-           //an IF loop for the cascading claw
+            //an IF loop for the cascading claw
            /*if (gamepad2.dpad_left){
                 robot.armServo.setPosition(0);
            } else if (gamepad2.dpad_right){
@@ -143,36 +141,57 @@ public class MecanumTeleOp extends LinearOpMode {
             }
             */
             // press y to make cascading claw to release or grab
-            yCurrentState = gamepad1.y;
-            if(yCurrentState && (yCurrentState != yPrevState )) {
-                robot.isCascadingClaw =!robot.isCascadingClaw;
+            yCurrentState = gamepad2.y;
+            if (yCurrentState && (yCurrentState != yPrevState)) {
+                robot.isCascadingClaw = !robot.isCascadingClaw;
                 if (robot.isCascadingClaw) {
                     robot.servoCascadingClaw.setPosition(0.15);
-                }
-                else {
-                        robot.servoCascadingClaw.setPosition(0);
+                } else {
+                    robot.servoCascadingClaw.setPosition(0);
 
-                    }
                 }
             }
+            // press to make the picker arm release and grab
             yPrevState = yCurrentState;
-
-           if (gamepad2.y){
-                robot.pickerArmServo.setPosition(0.32);
-            }
-            else if (gamepad2.a){
-                robot.pickerArmServo.setPosition(0);
-            }
-            if (gamepad2.left_bumper) {
-                robot.pickerClawServo.setPosition(0.15);
-            }
-            else if (gamepad2.right_bumper) {
-                robot.pickerClawServo.setPosition(0);
-            }
-
-
+        /* if (gamepad2.left_bumper) {
+            robot.pickerClawServo.setPosition(0.15);
+        } else if (gamepad2.right_bumper) {
+            robot.pickerClawServo.setPosition(0);
         }
+       */
+            // press y to make picker claw to release or grab
+            bCurrentState = gamepad1.b;
+            if (bCurrentState && (bCurrentState != bPrevState)) {
+                robot.ispickerClaw = !robot.ispickerClaw;
+                if (robot.ispickerClaw) {
+                    robot.pickerClawServo.setPosition(0.15);
+                } else {
+                    robot.pickerClawServo.setPosition(0);
 
+                }
+            }
+            bPrevState = bCurrentState;
+
+            /*if (gamepad2.y) {
+                robot.pickerArmServo.setPosition(0.32);
+            } else if (gamepad2.a) {
+                robot.pickerArmServo.setPosition(0);
+            */
+            // press x to make picker arm go up or down
+            x2CurrentState = gamepad1.x;
+            if (x2CurrentState && (x2CurrentState != x2PrevState)) {
+                robot.ispickerArm = !robot.ispickerArm;
+                if (robot.ispickerArm) {
+                    robot.pickerArmServo.setPosition(robot.SERVO90);
+                } else {
+                    robot.pickerArmServo.setPosition(robot.SERVO0);
+
+                }
+            }
+            x2PrevState = x2CurrentState;
+
+            }
+        }
 
 
     // Easier to understand and make changes when considering turning and strafing right
@@ -195,10 +214,10 @@ public class MecanumTeleOp extends LinearOpMode {
             rightBackPower /= max;
         }
         //Sets the powers of the wheels
-        robot.leftBackDrive.setPower(leftBackPower);
-        robot.rightBackDrive.setPower(rightBackPower);
-        robot.leftFrontDrive.setPower(leftFrontPower);
-        robot.rightFrontDrive.setPower(rightFrontPower);
+        robot.leftBackDrive.setPower(-leftBackPower);
+        robot.rightBackDrive.setPower(-rightBackPower);
+        robot.leftFrontDrive.setPower(-leftFrontPower);
+        robot.rightFrontDrive.setPower(-rightFrontPower);
     }
 
 }
