@@ -37,6 +37,8 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
+import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
+
 /**
  * This is NOT an opmode.
  *
@@ -95,6 +97,7 @@ public class HardwareSkystone
     public boolean ispickerArm = false;
     public final double SERVO0 = 0.32;
     public final double SERVO90 = 0;
+
     //Variables for using IMU/Gyro
     public BNO055IMU imu = null;
     static final public double GYRO_TOLERANCE = 5;
@@ -102,6 +105,7 @@ public class HardwareSkystone
     // Robot Sensor Variables
     ColorSensor colorSensor;
 
+   public WebcamName webcamName = null;
 
     /* local OpMode members. */
     HardwareMap hwMap           =  null;
@@ -127,6 +131,10 @@ public class HardwareSkystone
         cascadingVerticalArm = hwMap.get(DcMotor.class, "cascadingVerticalArm");
         cascadingHorizontalArm = hwMap.get(DcMotor.class, "cascadingHorizontalArm");
 
+        /*
+         * Retrieve the camera we are to use.
+         */
+        webcamName = hwMap.get(WebcamName.class, "Webcam");
 
         servoCascadingClaw = hwMap.get(Servo.class,"CascadingClawServo");
         servoRepositioning = hwMap.get(Servo.class,"servoRepositioning");

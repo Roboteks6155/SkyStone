@@ -29,12 +29,12 @@
 
 package org.firstinspires.ftc.teamcode;
 
-import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.util.ElapsedTime;
+import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.firstinspires.ftc.robotcore.external.ClassFactory;
+import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.robotcore.external.matrices.OpenGLMatrix;
 import org.firstinspires.ftc.robotcore.external.matrices.VectorF;
 import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
@@ -42,7 +42,6 @@ import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackable;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackableDefaultListener;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackables;
-import org.firstinspires.ftc.teamcode.PreSeasonTests.HardwarePushbot;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -83,22 +82,11 @@ import static org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocaliz
  * is explained below.
  */
 
-
-@Autonomous(name="AutoDriveSenseSkystone2",group= "Test" )
+@TeleOp(name="SKYSTONE Vuforia Nav Webcam", group ="Concept")
 //@Disabled
-public class AutoDriveSenseSkystone2 extends LinearOpMode {
+public class WebcamTest extends LinearOpMode {
 
-    /* Declare OpMode member. */
-    HardwareSkystone robot = new HardwareSkystone();
-
-    String skystonePositon;
-
-    // IMPORTANT:  For Phone Camera, set 1) the camera source and 2) the orientation, based on how your phone is mounted:
-    // 1) Camera Source.  Valid choices are:  BACK (behind screen) or FRONT (selfie side)
-    // 2) Phone Orientation. Choices are: PHONE_IS_PORTRAIT = true (portrait) or PHONE_IS_PORTRAIT = false (landscape)
-    //
-    // NOTE: If you are running on a CONTROL HUB, with only one USB WebCam, you must select CAMERA_CHOICE = BACK; and PHONE_IS_PORTRAIT = false;
-    //
+    // IMPORTANT: If you are using a USB WebCam, you must select CAMERA_CHOICE = BACK; and PHONE_IS_PORTRAIT = false;
     private static final VuforiaLocalizer.CameraDirection CAMERA_CHOICE = BACK;
     private static final boolean PHONE_IS_PORTRAIT = false  ;
 
@@ -116,6 +104,7 @@ public class AutoDriveSenseSkystone2 extends LinearOpMode {
      */
     private static final String VUFORIA_KEY =
             "AUQjOCH/////AAABmZze+n8bwEqgsTx67M3N4s9FOi2kjnhS5MO9kw2EMXMGPEzG/j4XKth779vKOyVLgv4G0Bs78WSls3O6DnJPAR+aZD5pce07IukhOBq2JVK0Vuv/uGVw+xb1vcgzD2cXcXv2askajp6vWAHmTf0/TeiRcn128n00LvkGP4sKMMVsDtCxdKYThMGxCYVWI8bSIsJi6ikraV9jkqjuV83+FzHQFGKSttT/9kr3nMZc7tuXC3lL2vgkFt0Q+azowmajL5PuCCgNblSsTemP8y2dOeQ9QJTkf+wImOXS/2OJAiD7IDaCc0jiF1M2p7EnBEUCnpeypjrVjA05rGF+AaXgsVvH+x9BTO77yfxWdIFXFuqi";
+
 
     // Since ImageTarget trackables use mm to specifiy their dimensions, we must use mm for all the physical dimension.
     // We will define some constants and conversions here
@@ -139,36 +128,23 @@ public class AutoDriveSenseSkystone2 extends LinearOpMode {
     // Class Members
     private OpenGLMatrix lastLocation = null;
     private VuforiaLocalizer vuforia = null;
+
+    /**
+     * This is the webcam we are to use. As with other hardware devices such as motors and
+     * servos, this device is identified using the robot configuration tool in the FTC application.
+     */
+    WebcamName webcamName = null;
+
     private boolean targetVisible = false;
     private float phoneXRotate    = 0;
     private float phoneYRotate    = 0;
     private float phoneZRotate    = 0;
 
-    //X distance from Skystone
-    double skystoneXOffset;
-
-    private ElapsedTime runtime = new ElapsedTime();
-
     @Override public void runOpMode() {
-
-        robot.init(hardwareMap);
-
-
-        // Send telemetry message to signify robot waiting;
-        telemetry.addData("Status", "Resetting Encoders");    //
-        telemetry.update();
-
-        //Reset encoders to make sure the encoders start at 0
-        robot.leftBackDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        robot.rightBackDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        robot.leftFrontDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        robot.rightFrontDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-
-        //Set mode for the motors to run using an encoder
-        robot.leftBackDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        robot.rightBackDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        robot.leftFrontDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        robot.rightFrontDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        /*
+         * Retrieve the camera we are to use.
+         */
+        webcamName = hardwareMap.get(WebcamName.class, "Webcam");
 
         /*
          * Configure Vuforia by creating a Parameter object, and passing it to the Vuforia engine.
@@ -181,12 +157,11 @@ public class AutoDriveSenseSkystone2 extends LinearOpMode {
         // VuforiaLocalizer.Parameters parameters = new VuforiaLocalizer.Parameters();
 
         parameters.vuforiaLicenseKey = VUFORIA_KEY;
-        //parameters.cameraDirection   = CAMERA_CHOICE;
 
         /**
          * We also indicate which camera on the RC we wish to use.
          */
-        parameters.cameraName = robot.webcamName;
+        parameters.cameraName = webcamName;
 
         //  Instantiate the Vuforia engine
         vuforia = ClassFactory.getInstance().createVuforia(parameters);
@@ -248,8 +223,8 @@ public class AutoDriveSenseSkystone2 extends LinearOpMode {
         // Rotated it to to face forward, and raised it to sit on the ground correctly.
         // This can be used for generic target-centric approach algorithms
         stoneTarget.setLocation(OpenGLMatrix
-                .translation(0, 0, stoneZ)                                   //changed thirdAngle to zero becuase skystone faces Red Alliance
-                .multiplied(Orientation.getRotationMatrix(EXTRINSIC, XYZ, DEGREES, 90, 0, 0)));
+                .translation(0, 0, stoneZ)
+                .multiplied(Orientation.getRotationMatrix(EXTRINSIC, XYZ, DEGREES, 90, 0, -90)));
 
         //Set the position of the bridge support targets with relation to origin (center of field)
         blueFrontBridge.setLocation(OpenGLMatrix
@@ -329,9 +304,9 @@ public class AutoDriveSenseSkystone2 extends LinearOpMode {
 
         // Next, translate the camera lens to where it is on the robot.
         // In this example, it is centered (left to right), but forward of the middle of the robot, and above ground level.
-        final float CAMERA_FORWARD_DISPLACEMENT  = 8f * mmPerInch;   // eg: Camera is 4 Inches in front of robot center
-        final float CAMERA_VERTICAL_DISPLACEMENT = 4.3f * mmPerInch;   // eg: Camera is 8 Inches above ground
-        final float CAMERA_LEFT_DISPLACEMENT     = 0f * mmPerInch;     // eg: Camera is ON the robot's center line
+        final float CAMERA_FORWARD_DISPLACEMENT  = 4.0f * mmPerInch;   // eg: Camera is 4 Inches in front of robot-center
+        final float CAMERA_VERTICAL_DISPLACEMENT = 8.0f * mmPerInch;   // eg: Camera is 8 Inches above ground
+        final float CAMERA_LEFT_DISPLACEMENT     = 0;     // eg: Camera is ON the robot's center line
 
         OpenGLMatrix robotFromCamera = OpenGLMatrix
                     .translation(CAMERA_FORWARD_DISPLACEMENT, CAMERA_LEFT_DISPLACEMENT, CAMERA_VERTICAL_DISPLACEMENT)
@@ -348,22 +323,7 @@ public class AutoDriveSenseSkystone2 extends LinearOpMode {
         // CONSEQUENTLY do not put any driving commands in this loop.
         // To restore the normal opmode structure, just un-comment the following line:
 
-        waitForStart();
-        //to test if the robot will move forward with time only
-        /*
-        robot.leftBackDrive.setPower(0.1);
-        robot.leftFrontDrive.setPower(0.1);
-        robot.rightBackDrive.setPower(0.1);
-        robot.rightFrontDrive.setPower(0.1);
-        sleep(1000);
-
-        robot.leftBackDrive.setPower(0.0);
-        robot.leftFrontDrive.setPower(0.0);
-        robot.rightBackDrive.setPower(0.0);
-        robot.rightFrontDrive.setPower(0.0);
-*/
-// make robot move forward using encoders
-        encoderDrive(0.2,16,16,5);
+        // waitForStart();
 
         // Note: To use the remote camera preview:
         // AFTER you hit Init on the Driver Station, use the "options menu" to select "Camera Stream"
@@ -375,15 +335,8 @@ public class AutoDriveSenseSkystone2 extends LinearOpMode {
             // check all the trackable targets to see which one (if any) is visible.
             targetVisible = false;
             for (VuforiaTrackable trackable : allTrackables) {
-                telemetry.addData("Visible Target Test1", trackable.getName());
-                telemetry.addData("IsVisible Test2", ((VuforiaTrackableDefaultListener)trackable.getListener()).isVisible());
-
                 if (((VuforiaTrackableDefaultListener)trackable.getListener()).isVisible()) {
                     telemetry.addData("Visible Target", trackable.getName());
-
-                    if( trackable.getName().equals("Stone Target")) {
-                        telemetry.addLine("Skystone is visible");
-                    }
                     targetVisible = true;
 
                     // getUpdatedRobotLocation() will return null if no new information is available since
@@ -403,214 +356,17 @@ public class AutoDriveSenseSkystone2 extends LinearOpMode {
                 telemetry.addData("Pos (in)", "{X, Y, Z} = %.1f, %.1f, %.1f",
                         translation.get(0) / mmPerInch, translation.get(1) / mmPerInch, translation.get(2) / mmPerInch);
 
-                skystoneXOffset = translation.get(0) / mmPerInch;
-
-                telemetry.addData("Skystone X Offset", skystoneXOffset);
-
                 // express the rotation of the robot in degrees.
                 Orientation rotation = Orientation.getOrientation(lastLocation, EXTRINSIC, XYZ, DEGREES);
                 telemetry.addData("Rot (deg)", "{Roll, Pitch, Heading} = %.0f, %.0f, %.0f", rotation.firstAngle, rotation.secondAngle, rotation.thirdAngle);
-
-                if (skystoneXOffset<0) {
-                    String skystonePositon = "Skystone Pos. 1";
-                    telemetry.addData("Skystone Position", skystonePositon);
-                    encoderDrive(0.3,14,14,3);
-                    robot.rightFrontDrive.setPower(-0.3);
-                    robot.leftBackDrive.setPower(-0.3);
-                    robot.rightBackDrive.setPower(0.3);
-                    robot.leftFrontDrive.setPower(0.3);
-                    sleep(300);
-                    robot.rightFrontDrive.setPower(0);
-                    robot.leftBackDrive.setPower(0);
-                    robot.rightBackDrive.setPower(0);
-                    robot.leftFrontDrive.setPower(0);
-                    sleep(2000);
-                    //Put pick up Skystone code here
-                    //
-                    //
-
-
-                    break;
-                } else if (skystoneXOffset>0) {
-                    String skystonePositon = "Skystone Pos. 2";
-                    telemetry.addData("Skystone Position", skystonePositon);
-                }
-
-
             }
             else {
-                String skystonePositon = "Skystone Pos. 3";
-                telemetry.addData("Skystone Position",skystonePositon );
+                telemetry.addData("Visible Target", "none");
             }
             telemetry.update();
         }
 
         // Disable Tracking when we are done;
         targetsSkyStone.deactivate();
-
-        encoderDrive(0.1,-15,-15,10);
-        telemetry.addData("Skystone Position",skystonePositon );
-        sleep(4000);
-        robot.rightFrontDrive.setPower(-0.3);
-        robot.leftBackDrive.setPower(-0.3);
-        robot.rightBackDrive.setPower(0.3);
-        robot.leftFrontDrive.setPower(0.3);
-        sleep(2000);
     }
-
-    public void encoderDrive(double speed,
-                             double leftInches, double rightInches,
-                             double timeoutS) {
-
-        //variables that are used to set the target distance the wheel is going
-        int newLeftBackTarget;
-        int newRightBackTarget;
-        int newLeftFrontTarget;
-        int newRightFrontTarget;
-
-        // Ensure that the opmode is still active
-        if (opModeIsActive()) {
-
-            //Reset encoders to make sure the encoders start at 0
-            robot.leftBackDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-            robot.rightBackDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-            robot.leftFrontDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-            robot.rightFrontDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-
-            // Determine new target position, and pass to motor controller
-            newLeftBackTarget = robot.leftBackDrive.getCurrentPosition() + (int)(leftInches * robot.COUNTS_PER_INCH_GOBILDA);
-            newRightBackTarget = robot.rightBackDrive.getCurrentPosition() + (int)(rightInches * robot.COUNTS_PER_INCH_GOBILDA);
-            //newLeftFrontTarget = robot.leftBackDrive.getCurrentPosition() + (int)(leftInches * robot.COUNTS_PER_INCH_GOBILDA);
-            //newRightFrontTarget = robot.rightBackDrive.getCurrentPosition() + (int)(rightInches * robot.COUNTS_PER_INCH_GOBILDA);
-
-
-            //Tell each motor what it's target/distance is
-            robot.leftBackDrive.setTargetPosition(newLeftBackTarget);
-            robot.rightBackDrive.setTargetPosition(newRightBackTarget);
-            robot.leftFrontDrive.setTargetPosition(newLeftBackTarget);
-            robot.rightFrontDrive.setTargetPosition(newRightBackTarget);
-            //robot.leftFrontDrive.setTargetPosition(newLeftFrontTarget);
-            //robot.rightFrontDrive.setTargetPosition(newRightFrontTarget);
-
-            // Turn On RUN_TO_POSITION
-            robot.leftBackDrive.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-            robot.rightBackDrive.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-            robot.leftFrontDrive.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-            robot.rightFrontDrive.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-
-            // reset the timeout time and start motion.
-            runtime.reset();
-            robot.leftBackDrive.setPower(Math.abs(speed));
-            robot.rightBackDrive.setPower(Math.abs(speed));
-            robot.leftFrontDrive.setPower(Math.abs(speed));
-            robot.rightFrontDrive.setPower(Math.abs(speed));
-
-            // keep looping while we are still active, and there is time left, and both motors are running.
-            // Note: We use (isBusy() && isBusy()) in the loop test, which means that when EITHER motor hits
-            // its target position, the motion will stop.  This is "safer" in the event that the robot will
-            // always end the motion as soon as possible.
-            // However, if you require that BOTH motors have finished their moves before the robot continues
-            // onto the next step, use (isBusy() || isBusy()) in the loop test.
-            while (opModeIsActive() &&
-                    (runtime.seconds() < timeoutS) &&
-                    (robot.leftBackDrive.isBusy() && robot.rightBackDrive.isBusy())) {
-
-                // Display it for the driver.
-                telemetry.addData("Path1",  "Running to %7d :%7d", newLeftBackTarget,  newRightBackTarget);
-                telemetry.addData("Path2",  "Running at %7d :%7d",
-                        robot.leftBackDrive.getCurrentPosition(),
-                        robot.rightBackDrive.getCurrentPosition());
-                telemetry.update();
-            }
-
-            // Stop all motion;
-            robot.leftBackDrive.setPower(0);
-            robot.rightBackDrive.setPower(0);
-            robot.leftFrontDrive.setPower(0);
-            robot.rightFrontDrive.setPower(0);
-
-            // Turn off RUN_TO_POSITION
-            robot.leftBackDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-            robot.rightBackDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-            robot.leftFrontDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-            robot.rightFrontDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-
-            // optional pause after each move
-            sleep(250);
-        }
-    }
-
-    /*public void encoderStrafe(double speed,
-                             double leftInches, double rightInches,
-                             double timeoutS) {
-
-        //variables that are used to set the target distance the wheel is going
-        int newLeftBackTarget;
-        int newRightBackTarget;
-        int newLeftFrontTarget;
-        int newRightFrontTarget;
-
-        // Ensure that the opmode is still active
-        if (opModeIsActive()) {
-
-            // Determine new target position, and pass to motor controller
-            newLeftBackTarget = robot.leftBackDrive.getCurrentPosition() + (int)(leftInches * robot.COUNTS_PER_INCH_GOBILDA);
-            newRightBackTarget = robot.rightBackDrive.getCurrentPosition() + (int)(rightInches * robot.COUNTS_PER_INCH_GOBILDA);
-            newLeftFrontTarget = robot.leftBackDrive.getCurrentPosition() + (int)(leftInches * robot.COUNTS_PER_INCH_GOBILDA);
-            newRightFrontTarget = robot.rightBackDrive.getCurrentPosition() + (int)(rightInches * robot.COUNTS_PER_INCH_GOBILDA);
-
-            //Tell each motor what it's target/distance is
-            robot.leftBackDrive.setTargetPosition(newLeftBackTarget);
-            robot.rightBackDrive.setTargetPosition(newRightBackTarget);
-            robot.leftFrontDrive.setTargetPosition(newLeftFrontTarget);
-            robot.rightFrontDrive.setTargetPosition(newRightFrontTarget);
-
-            // Turn On RUN_TO_POSITION
-            robot.leftBackDrive.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-            robot.rightBackDrive.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-            robot.leftFrontDrive.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-            robot.rightFrontDrive.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-
-            // reset the timeout time and start motion.
-            runtime.reset();
-            robot.leftBackDrive.setPower(Math.abs(speed));
-            robot.rightBackDrive.setPower(Math.abs(speed));
-            robot.leftFrontDrive.setPower(Math.abs(speed));
-            robot.rightFrontDrive.setPower(Math.abs(speed));
-
-            // keep looping while we are still active, and there is time left, and both motors are running.
-            // Note: We use (isBusy() && isBusy()) in the loop test, which means that when EITHER motor hits
-            // its target position, the motion will stop.  This is "safer" in the event that the robot will
-            // always end the motion as soon as possible.
-            // However, if you require that BOTH motors have finished their moves before the robot continues
-            // onto the next step, use (isBusy() || isBusy()) in the loop test.
-            while (opModeIsActive() &&
-                    (runtime.seconds() < timeoutS) &&
-                    (robot.leftBackDrive.isBusy() && robot.rightBackDrive.isBusy())) {
-
-                // Display it for the driver.
-                telemetry.addData("Path1",  "Running to %7d :%7d", newLeftFrontTarget,  newRightFrontTarget);
-                telemetry.addData("Path2",  "Running at %7d :%7d",
-                        robot.leftBackDrive.getCurrentPosition(),
-                        robot.rightBackDrive.getCurrentPosition());
-                telemetry.update();
-            }
-
-            // Stop all motion;
-            robot.leftBackDrive.setPower(0);
-            robot.rightBackDrive.setPower(0);
-            robot.leftFrontDrive.setPower(0);
-            robot.rightFrontDrive.setPower(0);
-
-            // Turn off RUN_TO_POSITION
-            robot.leftBackDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-            robot.rightBackDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-            robot.leftFrontDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-            robot.rightFrontDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-
-            // optional pause after each move
-            sleep(250);
-        }
-
-    } */
 }
