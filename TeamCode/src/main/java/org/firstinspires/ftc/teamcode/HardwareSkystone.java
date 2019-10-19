@@ -71,11 +71,12 @@ public class HardwareSkystone
     //Encoder Variables
     public final double     DRIVE_SPEED             = 0.6;
     public final double     TURN_SPEED              = 0.5;
-    public final double     COUNTS_PER_MOTOR_REV_GOBILDA    = 753.2 ;    // For Gobilda Motor Encoder
-    public final double     DRIVE_GEAR_REDUCTION    = 0.6666 ;     // This is < 1.0 if geared UP
+    static public final double     COUNTS_PER_MOTOR_REV_GOBILDA    = 753.2 ;    // For Gobilda Motor Encoder
+    static public final double     DRIVE_GEAR_REDUCTION    = 0.6666 ;     // This is < 1.0 if geared UP
     public final double     WHEEL_DIAMETER_INCHES   = 4.0 ;     // For figuring circumference
     public final double     COUNTS_PER_INCH_GOBILDA         = (COUNTS_PER_MOTOR_REV_GOBILDA * DRIVE_GEAR_REDUCTION) / (WHEEL_DIAMETER_INCHES * 3.1415);
-
+    static final double INCHES_PER_ROTATION_STRAFING = 10.6;
+    static public final double STRAFING_COUNTS_PER_INCH = (COUNTS_PER_MOTOR_REV_GOBILDA * DRIVE_GEAR_REDUCTION) / (INCHES_PER_ROTATION_STRAFING);
     //Proportional Control Variables
     public double TOLERANCE = 5;
     public double PROPORTIONAL_CONSTANT;
@@ -91,21 +92,25 @@ public class HardwareSkystone
     public Servo servoCascadingClaw;
     public Servo pickerArmServo;
     public Servo pickerClawServo;
+    public Servo leftCollectorServo;
+    public Servo rightCollectorServo;
     public boolean isReposition = false;
     public boolean isCascadingClaw = false;
     public boolean ispickerClaw = false;
     public boolean ispickerArm = false;
+    public boolean isIntake = false;
     public final double SERVO0 = 0.32;
     public final double SERVO90 = 0;
 
+
     //Variables for using IMU/Gyro
     public BNO055IMU imu = null;
-    static final public double GYRO_TOLERANCE = 5;
+    static final public double GYRO_TOLERANCE = 2.5;
 
     // Robot Sensor Variables
     ColorSensor colorSensor;
 
-   public WebcamName webcamName = null;
+    public WebcamName webcamName = null;
 
     /* local OpMode members. */
     HardwareMap hwMap           =  null;
@@ -140,22 +145,29 @@ public class HardwareSkystone
         servoRepositioning = hwMap.get(Servo.class,"servoRepositioning");
         pickerArmServo = hwMap.get(Servo.class,"pickerArmServo");
         pickerClawServo =  hwMap.get(Servo.class,"pickerClawServo");
-
+        leftCollectorServo = hwMap.get(Servo.class, "leftCollectorServo");
+        rightCollectorServo = hwMap.get(Servo.class, "rightCollectorServo");
         colorSensor =  hwMap.get(ColorSensor.class, "colorsensor");
 
         leftFrontDrive.setDirection(DcMotor.Direction.REVERSE); // Set to REVERSE if using AndyMark motors
         rightFrontDrive.setDirection(DcMotor.Direction.FORWARD);// Set to FORWARD if using AndyMark motors
         leftBackDrive.setDirection(DcMotor.Direction.REVERSE); // Set to REVERSE if using AndyMark motors
         rightBackDrive.setDirection(DcMotor.Direction.FORWARD);// Set to FORWARD if using AndyMark motors
+        rightCollectorMotor.setDirection(DcMotor.Direction.REVERSE); // Set to REVERSE if using AndyMark motors
 //        servoRepositioning.setDirection(Servo.Direction.REVERSE);// Set direction of the Servo
 
+        // initialize positions of servos
         servoRepositioning.setPosition(SERVO0);
+        pickerArmServo.setPosition(SERVO0);
+
+
+
         // Set all motors to zero power
         leftFrontDrive.setPower(0);
         rightFrontDrive.setPower(0);
         leftBackDrive.setPower(0);
         rightBackDrive.setPower(0);
-       // leftArm.setPower(0);
+        // leftArm.setPower(0);
 
         leftFrontDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         leftBackDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
@@ -195,5 +207,4 @@ public class HardwareSkystone
         imu.initialize(parameters);
 
     }
- }
-
+}

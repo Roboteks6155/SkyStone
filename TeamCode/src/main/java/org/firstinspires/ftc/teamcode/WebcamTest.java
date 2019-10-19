@@ -86,6 +86,8 @@ import static org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocaliz
 //@Disabled
 public class WebcamTest extends LinearOpMode {
 
+    HardwareSkystone robot           = new HardwareSkystone();   // Use a Pushbot's hardware
+
     // IMPORTANT: If you are using a USB WebCam, you must select CAMERA_CHOICE = BACK; and PHONE_IS_PORTRAIT = false;
     private static final VuforiaLocalizer.CameraDirection CAMERA_CHOICE = BACK;
     private static final boolean PHONE_IS_PORTRAIT = false  ;
@@ -323,8 +325,15 @@ public class WebcamTest extends LinearOpMode {
         // CONSEQUENTLY do not put any driving commands in this loop.
         // To restore the normal opmode structure, just un-comment the following line:
 
-        // waitForStart();
+        waitForStart();
 
+
+        if(gamepad1.right_bumper){
+            robot.leftBackDrive.setPower(-0.2);
+            robot.rightBackDrive.setPower(0.2);
+            robot.leftFrontDrive.setPower(0.2);
+            robot.rightFrontDrive.setPower(-0.2);
+        }
         // Note: To use the remote camera preview:
         // AFTER you hit Init on the Driver Station, use the "options menu" to select "Camera Stream"
         // Tap the preview window to receive a fresh image.

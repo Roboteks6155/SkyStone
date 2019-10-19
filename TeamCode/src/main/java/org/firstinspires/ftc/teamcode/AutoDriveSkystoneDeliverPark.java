@@ -30,7 +30,6 @@
 package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.util.ElapsedTime;
@@ -38,11 +37,15 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 import org.firstinspires.ftc.robotcore.external.ClassFactory;
 import org.firstinspires.ftc.robotcore.external.matrices.OpenGLMatrix;
 import org.firstinspires.ftc.robotcore.external.matrices.VectorF;
+import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
+import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
 import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackable;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackableDefaultListener;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackables;
+import org.firstinspires.ftc.teamcode.HardwareSkystone;
 import org.firstinspires.ftc.teamcode.PreSeasonTests.HardwarePushbot;
 
 import java.util.ArrayList;
@@ -65,7 +68,6 @@ import static org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocaliz
  *
  * From the Audience perspective, the Red Alliance station is on the right and the
  * Blue Alliance Station is on the left.
-
  * Eight perimeter targets are distributed evenly around the four perimeter walls
  * Four Bridge targets are located on the bridge uprights.
  * Refer to the Field Setup manual for more specific location details
@@ -85,14 +87,14 @@ import static org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocaliz
  */
 
 
-@Autonomous(name="AutoDriveSenseSkystone2",group= "Test" )
-@Disabled
-public class AutoDriveSenseSkystone2 extends LinearOpMode {
+@Autonomous(name="AutoDriveSkystoneDeliverPark",group= "Skystone" )
+//@Disabled
+public class AutoDriveSkystoneDeliverPark extends LinearOpMode {
 
     /* Declare OpMode member. */
     HardwareSkystone robot = new HardwareSkystone();
 
-    String skystonePosition;
+    String skystonePositon;
 
     // IMPORTANT:  For Phone Camera, set 1) the camera source and 2) the orientation, based on how your phone is mounted:
     // 1) Camera Source.  Valid choices are:  BACK (behind screen) or FRONT (selfie side)
@@ -101,7 +103,7 @@ public class AutoDriveSenseSkystone2 extends LinearOpMode {
     // NOTE: If you are running on a CONTROL HUB, with only one USB WebCam, you must select CAMERA_CHOICE = BACK; and PHONE_IS_PORTRAIT = false;
     //
     private static final VuforiaLocalizer.CameraDirection CAMERA_CHOICE = BACK;
-    private static final boolean PHONE_IS_PORTRAIT = false;
+    private static final boolean PHONE_IS_PORTRAIT = false  ;
 
     /*
      * IMPORTANT: You need to obtain your own license key to use Vuforia. The string below with which
@@ -120,8 +122,8 @@ public class AutoDriveSenseSkystone2 extends LinearOpMode {
 
     // Since ImageTarget trackables use mm to specifiy their dimensions, we must use mm for all the physical dimension.
     // We will define some constants and conversions here
-    private static final float mmPerInch = 25.4f;
-    private static final float mmTargetHeight = (6) * mmPerInch;          // the height of the center of the target image above the floor
+    private static final float mmPerInch        = 25.4f;
+    private static final float mmTargetHeight   = (6) * mmPerInch;          // the height of the center of the target image above the floor
 
     // Constant for Stone Target
     private static final float stoneZ = 2.00f * mmPerInch;
@@ -135,24 +137,23 @@ public class AutoDriveSenseSkystone2 extends LinearOpMode {
 
     // Constants for perimeter targets
     private static final float halfField = 72 * mmPerInch;
-    private static final float quadField = 36 * mmPerInch;
+    private static final float quadField  = 36 * mmPerInch;
 
     // Class Members
     private OpenGLMatrix lastLocation = null;
     private VuforiaLocalizer vuforia = null;
     private boolean targetVisible = false;
-    private float phoneXRotate = 0;
-    private float phoneYRotate = 0;
-    private float phoneZRotate = 0;
+    private float phoneXRotate    = 0;
+    private float phoneYRotate    = 0;
+    private float phoneZRotate    = 0;
 
     //X and Y distance from Skystone
     double skystoneXOffset;
     double skystoneYOffset;
     private ElapsedTime runtime = new ElapsedTime();
 
-    @Override
-    public void runOpMode() {
-        //reaches to Hardware File
+    @Override public void runOpMode() {
+
         robot.init(hardwareMap);
 
 
@@ -196,7 +197,7 @@ public class AutoDriveSenseSkystone2 extends LinearOpMode {
         // Load the data sets for the trackable objects. These particular data
         // sets are stored in the 'assets' part of our application.
         VuforiaTrackables targetsSkyStone = this.vuforia.loadTrackablesFromAsset("Skystone");
-        //all the targets around the field
+
         VuforiaTrackable stoneTarget = targetsSkyStone.get(0);
         stoneTarget.setName("Stone Target");
         VuforiaTrackable blueRearBridge = targetsSkyStone.get(1);
@@ -281,7 +282,7 @@ public class AutoDriveSenseSkystone2 extends LinearOpMode {
 
         front1.setLocation(OpenGLMatrix
                 .translation(-halfField, -quadField, mmTargetHeight)
-                .multiplied(Orientation.getRotationMatrix(EXTRINSIC, XYZ, DEGREES, 90, 0, 90)));
+                .multiplied(Orientation.getRotationMatrix(EXTRINSIC, XYZ, DEGREES, 90, 0 , 90)));
 
         front2.setLocation(OpenGLMatrix
                 .translation(-halfField, quadField, mmTargetHeight)
@@ -297,7 +298,7 @@ public class AutoDriveSenseSkystone2 extends LinearOpMode {
 
         rear1.setLocation(OpenGLMatrix
                 .translation(halfField, quadField, mmTargetHeight)
-                .multiplied(Orientation.getRotationMatrix(EXTRINSIC, XYZ, DEGREES, 90, 0, -90)));
+                .multiplied(Orientation.getRotationMatrix(EXTRINSIC, XYZ, DEGREES, 90, 0 , -90)));
 
         rear2.setLocation(OpenGLMatrix
                 .translation(halfField, -quadField, mmTargetHeight)
@@ -326,14 +327,14 @@ public class AutoDriveSenseSkystone2 extends LinearOpMode {
 
         // Rotate the phone vertical about the X axis if it's in portrait mode
         if (PHONE_IS_PORTRAIT) {
-            phoneXRotate = 90;
+            phoneXRotate = 90 ;
         }
 
         // Next, translate the camera lens to where it is on the robot.
         // In this example, it is centered (left to right), but forward of the middle of the robot, and above ground level.
-        final float CAMERA_FORWARD_DISPLACEMENT = 8f * mmPerInch;   // eg: Camera is 4 Inches in front of robot center
+        final float CAMERA_FORWARD_DISPLACEMENT  = 8f * mmPerInch;   // eg: Camera is 4 Inches in front of robot center
         final float CAMERA_VERTICAL_DISPLACEMENT = 4.3f * mmPerInch;   // eg: Camera is 8 Inches above ground
-        final float CAMERA_LEFT_DISPLACEMENT = 0f * mmPerInch;     // eg: Camera is ON the robot's center line
+        final float CAMERA_LEFT_DISPLACEMENT     = 0f * mmPerInch;     // eg: Camera is ON the robot's center line
 
         OpenGLMatrix robotFromCamera = OpenGLMatrix
                 .translation(CAMERA_FORWARD_DISPLACEMENT, CAMERA_LEFT_DISPLACEMENT, CAMERA_VERTICAL_DISPLACEMENT)
@@ -351,17 +352,25 @@ public class AutoDriveSenseSkystone2 extends LinearOpMode {
         // To restore the normal opmode structure, just un-comment the following line:
 
         waitForStart();
-
-        //STEP 1: make robot move forward using encoders to be able to see first 2 stones
-        encoderDrive(0.2, 12, 12, 5);
+        //to test if the robot will move forward with time only
+        /*
+        robot.leftBackDrive.setPower(0.1);
+        robot.leftFrontDrive.setPower(0.1);
+        robot.rightBackDrive.setPower(0.1);
+        robot.rightFrontDrive.setPower(0.1);
         sleep(1000);
+        robot.leftBackDrive.setPower(0.0);
+        robot.leftFrontDrive.setPower(0.0);
+        robot.rightBackDrive.setPower(0.0);
+        robot.rightFrontDrive.setPower(0.0);
+*/
+// make robot move forward using encoders
+        encoderDrive(0.2,16,16,5);
 
         // Note: To use the remote camera preview:
         // AFTER you hit Init on the Driver Station, use the "options menu" to select "Camera Stream"
         // Tap the preview window to receive a fresh image.
-        /*******************************************************************************************
-         STEP 2: Activate vuforia to sense the skystone position
-         ******************************************************************************************/
+
         targetsSkyStone.activate();
         while (!isStopRequested()) {
 
@@ -369,26 +378,25 @@ public class AutoDriveSenseSkystone2 extends LinearOpMode {
             targetVisible = false;
             for (VuforiaTrackable trackable : allTrackables) {
                 telemetry.addData("Visible Target Test1", trackable.getName());
-                telemetry.addData("IsVisible Test2", ((VuforiaTrackableDefaultListener) trackable.getListener()).isVisible());
+                telemetry.addData("IsVisible Test2", ((VuforiaTrackableDefaultListener)trackable.getListener()).isVisible());
 
-                if (((VuforiaTrackableDefaultListener) trackable.getListener()).isVisible()) {
+                if (((VuforiaTrackableDefaultListener)trackable.getListener()).isVisible()) {
                     telemetry.addData("Visible Target", trackable.getName());
 
-                    if (trackable.getName().equals("Stone Target")) {
+                    if( trackable.getName().equals("Stone Target")) {
                         telemetry.addLine("Skystone is visible");
                     }
                     targetVisible = true;
 
                     // getUpdatedRobotLocation() will return null if no new information is available since
                     // the last time that call was made, or if the trackable is not currently visible.
-                    OpenGLMatrix robotLocationTransform = ((VuforiaTrackableDefaultListener) trackable.getListener()).getUpdatedRobotLocation();
+                    OpenGLMatrix robotLocationTransform = ((VuforiaTrackableDefaultListener)trackable.getListener()).getUpdatedRobotLocation();
                     if (robotLocationTransform != null) {
                         lastLocation = robotLocationTransform;
                     }
                     break;
                 }
             }
-            sleep(5000);
 
             // Provide feedback as to where the robot is located (if we know).
             if (targetVisible) {
@@ -397,23 +405,19 @@ public class AutoDriveSenseSkystone2 extends LinearOpMode {
                 telemetry.addData("Pos (in)", "{X, Y, Z} = %.1f, %.1f, %.1f",
                         translation.get(0) / mmPerInch, translation.get(1) / mmPerInch, translation.get(2) / mmPerInch);
 
-                // assigns the x and y deltas to these variables:
                 skystoneXOffset = translation.get(0) / mmPerInch;
                 skystoneYOffset = translation.get(1) / mmPerInch;
 
                 telemetry.addData("Skystone X Offset", skystoneXOffset);
-                telemetry.addData("Skystone Y Offset", skystoneYOffset);
-                sleep(5000);
 
                 // express the rotation of the robot in degrees.
                 Orientation rotation = Orientation.getOrientation(lastLocation, EXTRINSIC, XYZ, DEGREES);
                 telemetry.addData("Rot (deg)", "{Roll, Pitch, Heading} = %.0f, %.0f, %.0f", rotation.firstAngle, rotation.secondAngle, rotation.thirdAngle);
-                sleep(1000);
 
-                //Following "IF" loops determine in what position the Skystone is by using the X offset of the Stone
-                if (skystoneXOffset < 0) {
-                    skystonePosition = "Skystone Pos. 1";
-                    encoderDrive(0.2, -skystoneYOffset - 0.75, -skystoneYOffset - 0.75, 3);
+                if (skystoneXOffset<0) {
+                    skystonePositon = "Skystone Pos. 1";
+                    telemetry.addData("Skystone Position", skystonePositon);
+                    encoderDrive(0.3,-skystoneYOffset -1,-skystoneYOffset -1,3);
                     /*robot.rightFrontDrive.setPower(-0.3);
                     robot.leftBackDrive.setPower(-0.3);
                     robot.rightBackDrive.setPower(0.3);
@@ -423,82 +427,95 @@ public class AutoDriveSenseSkystone2 extends LinearOpMode {
                     robot.leftBackDrive.setPower(0);
                     robot.rightBackDrive.setPower(0);
                     robot.leftFrontDrive.setPower(0);
-                    sleep(1000);*/
-                    encoderStrafe(0.3,1,3,true);
+                    sleep(2000);*/
+                    encoderStrafe(0.2,-skystoneXOffset - 1.5,10,true);
                     robot.pickerArmServo.setPosition(robot.SERVO90);
                     sleep(1000);
                     break;
-
-                } else if (skystoneXOffset > 0) {
-                    skystonePosition = "Skystone Pos. 2";
-                    telemetry.addData("Skystone Position", skystonePosition);
-                    encoderDrive(0.3, 16, 16, 3);
-                   /* robot.rightFrontDrive.setPower(0.3);
-                    robot.leftBackDrive.setPower(0.3);
-                    robot.rightBackDrive.setPower(-0.3);
-                    robot.leftFrontDrive.setPower(-0.3);
-                    sleep(200);
+                } else if (skystoneXOffset>0) {
+                    skystonePositon = "Skystone Pos. 2";
+                    telemetry.addData("Skystone Position", skystonePositon);
+                    encoderDrive(0.3,-skystoneYOffset -1,-skystoneYOffset -1,3);
+                    /*robot.rightFrontDrive.setPower(-0.3);
+                    robot.leftBackDrive.setPower(-0.3);
+                    robot.rightBackDrive.setPower(0.3);
+                    robot.leftFrontDrive.setPower(0.3);
+                    sleep(300);
                     robot.rightFrontDrive.setPower(0);
                     robot.leftBackDrive.setPower(0);
                     robot.rightBackDrive.setPower(0);
                     robot.leftFrontDrive.setPower(0);
                     sleep(2000);*/
-                   encoderStrafe(0.3,5,5,false);
-                   robot.pickerArmServo.setPosition(robot.SERVO90);
-                    sleep(2000);
+                    encoderStrafe(0.2, skystoneXOffset-0,10,false);
+                    robot.pickerArmServo.setPosition(robot.SERVO90);
+                    sleep(1000);
                     break;
                 }
 
-            } else {
-                skystonePosition = "Skystone Pos. 3";
-                telemetry.addData("Skystone Position", skystonePosition);
-                encoderDrive(0.3, 16, 16, 3);
-                /*robot.rightFrontDrive.setPower(0.3);
-                robot.leftBackDrive.setPower(0.3);
-                robot.rightBackDrive.setPower(-0.3);
-                robot.leftFrontDrive.setPower(-0.3);
-                sleep(800);
-                robot.rightFrontDrive.setPower(0);
-                robot.leftBackDrive.setPower(0);
-                robot.rightBackDrive.setPower(0);
-                robot.leftFrontDrive.setPower(0);
-                sleep(3000);*/
-                encoderStrafe(0.4,9,9,false);
-                robot.pickerArmServo.setPosition(robot.SERVO90);
-                sleep(2000);
-                break;
+
+            }
+            else {
+                skystonePositon = "Skystone Pos. 3";
+                /*telemetry.addData("Skystone Position",skystonePositon );
+                encoderStrafe(0.2,12,4,false);
+                sleep(1000);
+                //VectorF translation = lastLocation.getTranslation();
+                //skystoneXOffset = translation.get(0) / mmPerInch;
+                //skystoneYOffset = translation.get(1) / mmPerInch;
+                encoderDrive(0.3, 13.75,13.75,4);
+                //encoderStrafe(0.2,skystoneXOffset-0, 3, true);
+                robot.pickerArmServo.setPosition(robot.SERVO90);*/
+            break;
             }
             telemetry.update();
         }
 
-        // Disable Tracking when we are done
+        // Disable Tracking when we are done;
         targetsSkyStone.deactivate();
 
-        if (skystonePosition == "Skystone Pos. 1") {
-            encoderDrive(0.3, -20, -20, 10);
+        if (skystonePositon == "Skystone Pos. 1"){
+            encoderDrive(0.2,-10,-10,10);
+            telemetry.addData("Skystone Position",skystonePositon );
+            encoderStrafe(0.4,50,10,true);
             /*robot.rightFrontDrive.setPower(-0.3);
             robot.leftBackDrive.setPower(-0.3);
             robot.rightBackDrive.setPower(0.3);
             robot.leftFrontDrive.setPower(0.3);
             sleep(2000);*/
-            encoderStrafe(0.5,48,4,true);
-        } else if (skystonePosition == "Skystone Pos. 2") {
-            encoderDrive(0.3, -20, -20, 10);
-            /*robot.rightFrontDrive.setPower(-0.3);
-            robot.leftBackDrive.setPower(-0.3);
-            robot.rightBackDrive.setPower(0.3);
-            robot.leftFrontDrive.setPower(0.3);
-            sleep(2200);*/
-            encoderStrafe(0.5,54,5,true);
-        } else {
-            encoderDrive(0.3, -20, -20, 10);
-            /*robot.rightFrontDrive.setPower(-0.3);
-            robot.leftBackDrive.setPower(-0.3);
-            robot.rightBackDrive.setPower(0.3);
-            robot.leftFrontDrive.setPower(0.3);
-            sleep(2400);*/
-            encoderStrafe(0.5,62,7,true);
+            robot.pickerArmServo.setPosition(robot.SERVO0);
+            encoderStrafe(0.4, 76, 10,false);
+            gyroDrive(0,0.1,false);
+            encoderDrive(0.2,15.25,15.25,4);
+            robot.pickerArmServo.setPosition(robot.SERVO90);
+            sleep(1000);
+            encoderDrive(0.2,-14,-14,4);
+            encoderStrafe(0.4, 64, 10,true);
+            robot.pickerArmServo.setPosition(robot.SERVO0);
+            //sleep(500);
+            encoderStrafe(0.4, 15, 10,false);
         }
+        else if (skystonePositon == "Skystone Pos. 2") {
+            encoderDrive(0.2,-10,-10,10);
+            telemetry.addData("Skystone Position",skystonePositon );
+            encoderStrafe(0.4,50,10,true);
+            /*robot.rightFrontDrive.setPower(-0.3);
+            robot.leftBackDrive.setPower(-0.3);
+            robot.rightBackDrive.setPower(0.3);
+            robot.leftFrontDrive.setPower(0.3);
+            sleep(2000);*/
+            robot.pickerArmServo.setPosition(robot.SERVO0);
+            encoderStrafe(0.4, 72, 7,false);
+            gyroDrive(0,0.1,false);
+            encoderDrive(0.2,15.25,15.25,4);
+            robot.pickerArmServo.setPosition(robot.SERVO90);
+            sleep(1000);
+            encoderDrive(0.2,-14,-14,4);
+            encoderStrafe(0.4, 64, 10,true);
+            robot.pickerArmServo.setPosition(robot.SERVO0);
+            //sleep(500);
+            encoderStrafe(0.4, 15, 10,false);
+        }
+
     }
 
     public void encoderDrive(double speed,
@@ -521,8 +538,8 @@ public class AutoDriveSenseSkystone2 extends LinearOpMode {
             robot.rightFrontDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
             // Determine new target position, and pass to motor controller
-            newLeftBackTarget = robot.leftBackDrive.getCurrentPosition() + (int) (leftInches * robot.COUNTS_PER_INCH_GOBILDA);
-            newRightBackTarget = robot.rightBackDrive.getCurrentPosition() + (int) (rightInches * robot.COUNTS_PER_INCH_GOBILDA);
+            newLeftBackTarget = robot.leftBackDrive.getCurrentPosition() + (int)(leftInches * robot.COUNTS_PER_INCH_GOBILDA);
+            newRightBackTarget = robot.rightBackDrive.getCurrentPosition() + (int)(rightInches * robot.COUNTS_PER_INCH_GOBILDA);
             //newLeftFrontTarget = robot.leftBackDrive.getCurrentPosition() + (int)(leftInches * robot.COUNTS_PER_INCH_GOBILDA);
             //newRightFrontTarget = robot.rightBackDrive.getCurrentPosition() + (int)(rightInches * robot.COUNTS_PER_INCH_GOBILDA);
 
@@ -559,8 +576,8 @@ public class AutoDriveSenseSkystone2 extends LinearOpMode {
                     (robot.leftBackDrive.isBusy() && robot.rightBackDrive.isBusy())) {
 
                 // Display it for the driver.
-                telemetry.addData("Path1", "Running to %7d :%7d", newLeftBackTarget, newRightBackTarget);
-                telemetry.addData("Path2", "Running at %7d :%7d",
+                telemetry.addData("Path1",  "Running to %7d :%7d", newLeftBackTarget,  newRightBackTarget);
+                telemetry.addData("Path2",  "Running at %7d :%7d",
                         robot.leftBackDrive.getCurrentPosition(),
                         robot.rightBackDrive.getCurrentPosition());
                 telemetry.update();
@@ -592,6 +609,12 @@ public class AutoDriveSenseSkystone2 extends LinearOpMode {
 
         if (opModeIsActive()) {
 
+            //Reset encoders to make sure the encoders start at 0
+            robot.leftBackDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+            robot.rightBackDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+            robot.leftFrontDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+            robot.rightFrontDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+
             if (!directionRight) {
                 newLeftFrontTarget = robot.leftFrontDrive.getCurrentPosition() + (int) (-inches * robot.STRAFING_COUNTS_PER_INCH);
                 newRightBackTarget = robot.rightBackDrive.getCurrentPosition() + (int) (-inches * robot.STRAFING_COUNTS_PER_INCH);
@@ -604,6 +627,7 @@ public class AutoDriveSenseSkystone2 extends LinearOpMode {
                 newRightFrontTarget = robot.rightFrontDrive.getCurrentPosition() + (int) (-inches * robot.STRAFING_COUNTS_PER_INCH);
             }
             telemetry.addData("current Postion", robot.leftBackDrive.getCurrentPosition());
+
             robot.leftFrontDrive.setTargetPosition(newLeftFrontTarget);
             robot.rightFrontDrive.setTargetPosition(newRightFrontTarget);
             robot.leftBackDrive.setTargetPosition(newLeftBackTarget);
@@ -611,12 +635,14 @@ public class AutoDriveSenseSkystone2 extends LinearOpMode {
 
             telemetry.addData("NewLeftBackTarget", newLeftBackTarget);
             telemetry.update();
-            sleep(2000);
+            sleep(100);
 
             robot.leftFrontDrive.setMode(DcMotor.RunMode.RUN_TO_POSITION);
             robot.rightFrontDrive.setMode(DcMotor.RunMode.RUN_TO_POSITION);
             robot.leftBackDrive.setMode(DcMotor.RunMode.RUN_TO_POSITION);
             robot.rightBackDrive.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+            runtime.reset();
 
             robot.leftFrontDrive.setPower(strafingSpeed);
             robot.rightFrontDrive.setPower(strafingSpeed);
@@ -648,8 +674,34 @@ public class AutoDriveSenseSkystone2 extends LinearOpMode {
             robot.leftFrontDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
             robot.rightFrontDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
-            // optional pause after each move
-            sleep(250);
+        }
+    }
+
+    public void gyroDrive(double targetAngle, double speed, boolean turnCCW){
+        double currentHeading = robot.imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES).firstAngle;
+
+        //leftDrive.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        //rightDrive.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+
+        if(opModeIsActive()){
+            while(opModeIsActive() && (Math.abs(targetAngle - currentHeading) >= robot.GYRO_TOLERANCE)){
+                currentHeading = robot.imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES).firstAngle;
+
+                double sign = turnCCW ? -1 : 1;
+                robot.leftBackDrive.setPower(speed * sign);
+                robot.rightBackDrive.setPower(speed * -sign);
+                robot.leftFrontDrive.setPower(speed * sign);
+                robot.rightFrontDrive.setPower(speed * -sign);
+
+                telemetry.addData("Base Power", speed);
+                telemetry.addData("Angle", currentHeading);
+                telemetry.addData("Error", (Math.abs(targetAngle - currentHeading)));
+                telemetry.update();
+            }
+            robot.leftBackDrive.setPower(0);
+            robot.rightBackDrive.setPower(0);
+            robot.leftFrontDrive.setPower(0);
+            robot.rightFrontDrive.setPower(0);
         }
     }
 }

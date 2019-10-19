@@ -31,10 +31,6 @@ package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import com.qualcomm.robotcore.hardware.Servo;
-import com.qualcomm.robotcore.util.Range;
-
-
 
 
 /**
@@ -53,7 +49,7 @@ import com.qualcomm.robotcore.util.Range;
 
 @TeleOp(name="MecanumPreSeason", group="Preseason")
 //@Disabled
-public class MecanumTeleOp extends LinearOpMode {
+public class MecanumTeleOp2 extends LinearOpMode {
 
     /* Declare OpMode members. */
     HardwareSkystone robot           = new HardwareSkystone();   // Use a Pushbot's hardware
@@ -81,7 +77,6 @@ public class MecanumTeleOp extends LinearOpMode {
 
         // run until the end of the match (driver presses STOP)
         while (opModeIsActive()) {
-
             //variable that assigns what joystick will give the power for vertical movement
             double cascadingHorizontalPower = gamepad2.left_stick_x;
             double cascadingVerticalPower = gamepad2.left_stick_y;
@@ -89,6 +84,7 @@ public class MecanumTeleOp extends LinearOpMode {
             //variable that assigns what trigger will give power to each compliant wheel
             double rightCollectorPower = gamepad2.right_trigger;
             double leftCollectorPower = gamepad2.left_trigger;
+
 
             // makes it so that translation is on the left joystick and rotation/turning is on the right joystick
             double forward = -gamepad1.left_stick_y / 2;
@@ -113,6 +109,12 @@ public class MecanumTeleOp extends LinearOpMode {
                 robot.rightCollectorMotor.setPower(1);
             }
 
+            if(gamepad1.right_bumper){
+                robot.leftBackDrive.setPower(-1);
+                robot.rightBackDrive.setPower(1);
+                robot.leftFrontDrive.setPower(1);
+                robot.rightFrontDrive.setPower(-1);
+            }
             //an IF loop to rotate the repositioning arm up and down
        /* if (gamepad1.y){
             robot.servoRepositioning.setPosition(0.32);

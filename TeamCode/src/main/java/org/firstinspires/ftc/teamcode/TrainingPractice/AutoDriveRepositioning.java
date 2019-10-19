@@ -1,3 +1,17 @@
+/*****************************************************************************************************
+
+ Event: FTC Skystone 2019
+ Author : Team Roboteks # 6155
+ OpMode Name: AutoDriveRepositioning
+ File Name: AutoDriveRepositioning.java
+ Created on: 10-5-19
+ Last Modified on:
+ OpMode Description: This OpMode is for Autonomous drive where the robot starts in the Building Zone and strafes to
+ the middle of the foundation, then it puts the repositioning arm down, strafes back, releases the
+ foundation, and goes backwards and parks under the red skybridge
+
+ *****************************************************************************************************/
+
 /* Copyright (c) 2017 FIRST. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
@@ -112,25 +126,19 @@ import org.firstinspires.ftc.teamcode.HardwareSkystone;
         // DRIVE_SPEED = 0.6
         // TURN_SPEED = 0.5
 
-        robot.leftFrontDrive.setPower(-robot.DRIVE_SPEED); // strafing left
-        robot.rightFrontDrive.setPower(robot.DRIVE_SPEED);
-        robot.leftBackDrive.setPower(robot.DRIVE_SPEED);
-        robot.rightBackDrive.setPower(-robot.DRIVE_SPEED);
-        sleep(3000);
+        encoderStrafe(false, 26, 0.3, 10); // Strafe to the foundation
 
-        encoderDrive(robot.DRIVE_SPEED,11,11,4); // Move robot to the middle of the foundation
+        encoderDrive(0.4,12.5,12.5,4); // Move robot to the middle of the foundation
 
-        robot.servoRepositioning.setPosition(90);      // put repositioning arm down onto the foundation
+        gyroDrive(0, 0.3, false);
 
-        robot.leftFrontDrive.setPower(robot.DRIVE_SPEED); // strafing right
-        robot.rightFrontDrive.setPower(-robot.DRIVE_SPEED);
-        robot.leftBackDrive.setPower(-robot.DRIVE_SPEED);
-        robot.rightBackDrive.setPower(robot.DRIVE_SPEED);
-        sleep(3000);
+        robot.servoRepositioning.setPosition(robot.SERVO90);      // put repositioning arm down onto the foundation
 
-        robot.servoRepositioning.setPosition(0);      // put repositioning arm up, not on the foundation
+        encoderStrafe(true, 75, 0.3, 7); // Move foundation to building site by strafing
 
-        encoderDrive(robot.DRIVE_SPEED,-50,-50,10);
+        robot.servoRepositioning.setPosition(robot.SERVO0);      // put repositioning arm up, not on the foundation
+
+        encoderDrive(robot.DRIVE_SPEED,-52,-52,10); // Go under the sky bridge and park
 
         // Step through each leg of the path,
         // Note: Reverse movement is obtained by setting a negative distance (not speed)
@@ -148,6 +156,83 @@ import org.firstinspires.ftc.teamcode.HardwareSkystone;
      *  2) Move runs out of time
      *  3) Driver stops the opmode running.
      */
+    public void encoderStrafe (boolean directionRight, double inches, double strafingSpeed, int timeoutS) {
+        //  left is false, right is true
+        int NewLeftFrontTarget;
+        int NewRightFrontTarget;
+        int NewLeftBackTarget;
+        int NewRightBackTarget;
+
+        if (opModeIsActive()) {
+
+            // reset encoders in the beginning of runs
+            robot.leftBackDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+            robot.rightBackDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+            robot.leftFrontDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+            robot.rightFrontDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+
+            if (!directionRight) {
+                NewLeftFrontTarget = robot.leftFrontDrive.getCurrentPosition() + (int) (-inches * robot.STRAFING_COUNTS_PER_INCH);
+                NewRightBackTarget = robot.rightBackDrive.getCurrentPosition() + (int) (-inches * robot.STRAFING_COUNTS_PER_INCH);
+                NewLeftBackTarget = robot.leftBackDrive.getCurrentPosition() + (int) (inches * robot.STRAFING_COUNTS_PER_INCH);
+                NewRightFrontTarget = robot.rightFrontDrive.getCurrentPosition() + (int) (inches * robot.STRAFING_COUNTS_PER_INCH);
+            } else {
+                NewLeftFrontTarget = robot.leftFrontDrive.getCurrentPosition() + (int) (inches * robot.STRAFING_COUNTS_PER_INCH);
+                NewRightBackTarget = robot.rightBackDrive.getCurrentPosition() + (int) (inches * robot.STRAFING_COUNTS_PER_INCH);
+                NewLeftBackTarget = robot.leftBackDrive.getCurrentPosition() + (int) (-inches * robot.STRAFING_COUNTS_PER_INCH);
+                NewRightFrontTarget = robot.rightFrontDrive.getCurrentPosition() + (int) (-inches * robot.STRAFING_COUNTS_PER_INCH);
+            }
+            telemetry.addData("current Postion",robot.leftBackDrive.getCurrentPosition());
+            robot.leftFrontDrive.setTargetPosition(NewLeftFrontTarget);
+            robot.rightFrontDrive.setTargetPosition(NewRightFrontTarget);
+            robot.leftBackDrive.setTargetPosition(NewLeftBackTarget);
+            robot.rightBackDrive.setTargetPosition(NewRightBackTarget);
+
+            telemetry.addData("NewLeftBackTarget", NewLeftBackTarget);
+            telemetry.update();
+            sleep(2000);
+
+            robot.leftFrontDrive.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            robot.rightFrontDrive.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            robot.leftBackDrive.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            robot.rightBackDrive.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+            runtime.reset();
+            robot.leftFrontDrive.setPower(strafingSpeed);
+            robot.rightFrontDrive.setPower(strafingSpeed);
+            robot.leftBackDrive.setPower(strafingSpeed);
+            robot.rightBackDrive.setPower(strafingSpeed);
+
+            // This while loop is NECESSARY to keep the motor running to its position
+            while (opModeIsActive() &&
+                    (runtime.seconds() < timeoutS) &&
+                    (robot.leftBackDrive.isBusy() && robot.rightBackDrive.isBusy())) {
+
+                // Display it for the driver.
+                telemetry.addData("Path1",  "Running to %7d :%7d", NewLeftBackTarget,  NewRightBackTarget);
+                telemetry.addData("Path2",  "Running at %7d :%7d",
+                        robot.leftBackDrive.getCurrentPosition(),
+                        robot.rightBackDrive.getCurrentPosition());
+                telemetry.update();
+            }
+
+            // Stop all motion;
+            robot.leftBackDrive.setPower(0);
+            robot.rightBackDrive.setPower(0);
+            robot.leftFrontDrive.setPower(0);
+            robot.rightFrontDrive.setPower(0);
+
+            // Turn off RUN_TO_POSITION
+            robot.leftBackDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+            robot.rightBackDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+            robot.leftFrontDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+            robot.rightFrontDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
+            // optional pause after each move
+            sleep(250);
+        }
+    }
+
     private void gyroDrive(double targetAngle, double speed, boolean turnCCW) {
         double currentHeading = robot.imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES).firstAngle;
 
@@ -171,34 +256,49 @@ import org.firstinspires.ftc.teamcode.HardwareSkystone;
     public void encoderDrive(double speed,
                              double leftInches, double rightInches,
                              double timeoutS) {
-        int newLeftTarget;
-        int newRightTarget;
+
+        //variables that are used to set the target distance the wheel is going
+        int newLeftBackTarget;
+        int newRightBackTarget;
+        int newLeftFrontTarget;
+        int newRightFrontTarget;
 
         // Ensure that the opmode is still active
         if (opModeIsActive()) {
 
+            //Reset encoders to make sure the encoders start at 0
+            robot.leftBackDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+            robot.rightBackDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+            robot.leftFrontDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+            robot.rightFrontDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+
             // Determine new target position, and pass to motor controller
-            newLeftTarget = robot.leftFrontDrive.getCurrentPosition() + (int)(leftInches * robot.COUNTS_PER_INCH_GOBILDA);
-            newRightTarget = robot.rightFrontDrive.getCurrentPosition() + (int)(rightInches * robot.COUNTS_PER_INCH_GOBILDA);
-            newLeftTarget = robot.leftBackDrive.getCurrentPosition() + (int)(leftInches * robot.COUNTS_PER_INCH_GOBILDA);
-            newRightTarget = robot.rightBackDrive.getCurrentPosition() + (int)(rightInches * robot.COUNTS_PER_INCH_GOBILDA);
-            robot.leftFrontDrive.setTargetPosition(newLeftTarget);
-            robot.rightFrontDrive.setTargetPosition(newRightTarget);
-            robot.leftBackDrive.setTargetPosition(newLeftTarget);
-            robot.rightBackDrive.setTargetPosition(newRightTarget);
+            newLeftBackTarget = robot.leftBackDrive.getCurrentPosition() + (int)(leftInches * robot.COUNTS_PER_INCH_GOBILDA);
+            newRightBackTarget = robot.rightBackDrive.getCurrentPosition() + (int)(rightInches * robot.COUNTS_PER_INCH_GOBILDA);
+            //newLeftFrontTarget = robot.leftBackDrive.getCurrentPosition() + (int)(leftInches * robot.COUNTS_PER_INCH_GOBILDA);
+            //newRightFrontTarget = robot.rightBackDrive.getCurrentPosition() + (int)(rightInches * robot.COUNTS_PER_INCH_GOBILDA);
+
+
+            //Tell each motor what it's target/distance is
+            robot.leftBackDrive.setTargetPosition(newLeftBackTarget);
+            robot.rightBackDrive.setTargetPosition(newRightBackTarget);
+            robot.leftFrontDrive.setTargetPosition(newLeftBackTarget);
+            robot.rightFrontDrive.setTargetPosition(newRightBackTarget);
+            //robot.leftFrontDrive.setTargetPosition(newLeftFrontTarget);
+            //robot.rightFrontDrive.setTargetPosition(newRightFrontTarget);
 
             // Turn On RUN_TO_POSITION
-            robot.leftFrontDrive.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-            robot.rightFrontDrive.setMode(DcMotor.RunMode.RUN_TO_POSITION);
             robot.leftBackDrive.setMode(DcMotor.RunMode.RUN_TO_POSITION);
             robot.rightBackDrive.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            robot.leftFrontDrive.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            robot.rightFrontDrive.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
             // reset the timeout time and start motion.
             runtime.reset();
-            robot.leftFrontDrive.setPower(Math.abs(speed));
-            robot.rightFrontDrive.setPower(Math.abs(speed));
             robot.leftBackDrive.setPower(Math.abs(speed));
             robot.rightBackDrive.setPower(Math.abs(speed));
+            robot.leftFrontDrive.setPower(Math.abs(speed));
+            robot.rightFrontDrive.setPower(Math.abs(speed));
 
             // keep looping while we are still active, and there is time left, and both motors are running.
             // Note: We use (isBusy() && isBusy()) in the loop test, which means that when EITHER motor hits
@@ -208,28 +308,107 @@ import org.firstinspires.ftc.teamcode.HardwareSkystone;
             // onto the next step, use (isBusy() || isBusy()) in the loop test.
             while (opModeIsActive() &&
                     (runtime.seconds() < timeoutS) &&
-                    (robot.leftFrontDrive.isBusy() && robot.rightFrontDrive.isBusy())) {
+                    (robot.leftBackDrive.isBusy() && robot.rightBackDrive.isBusy())) {
 
                 // Display it for the driver.
-                telemetry.addData("Path1",  "Running to %7d :%7d", newLeftTarget,  newRightTarget);
+                telemetry.addData("Path1",  "Running to %7d :%7d", newLeftBackTarget,  newRightBackTarget);
                 telemetry.addData("Path2",  "Running at %7d :%7d",
-                        robot.leftFrontDrive.getCurrentPosition(),
-                        robot.rightFrontDrive.getCurrentPosition());
+                        robot.leftBackDrive.getCurrentPosition(),
+                        robot.rightBackDrive.getCurrentPosition());
                 telemetry.update();
             }
 
             // Stop all motion;
-            robot.leftFrontDrive.setPower(0);
-            robot.rightFrontDrive.setPower(0);
             robot.leftBackDrive.setPower(0);
             robot.rightBackDrive.setPower(0);
+            robot.leftFrontDrive.setPower(0);
+            robot.rightFrontDrive.setPower(0);
 
             // Turn off RUN_TO_POSITION
-            robot.leftFrontDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-            robot.rightFrontDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
             robot.leftBackDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
             robot.rightBackDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-            //  sleep(250);  //optional pause after each move
+            robot.leftFrontDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+            robot.rightFrontDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
+            // optional pause after each move
+            sleep(250);
+        }
+    }
+
+    public void encoderStrafe(double strafingSpeed, double inches, int timeoutS, boolean directionRight) {
+        //  left is false, right is true
+        int newLeftFrontTarget;
+        int newRightFrontTarget;
+        int newLeftBackTarget;
+        int newRightBackTarget;
+
+        if (opModeIsActive()) {
+
+            //Reset encoders to make sure the encoders start at 0
+            robot.leftBackDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+            robot.rightBackDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+            robot.leftFrontDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+            robot.rightFrontDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+
+            if (!directionRight) {
+                newLeftFrontTarget = robot.leftFrontDrive.getCurrentPosition() + (int) (-inches * robot.STRAFING_COUNTS_PER_INCH);
+                newRightBackTarget = robot.rightBackDrive.getCurrentPosition() + (int) (-inches * robot.STRAFING_COUNTS_PER_INCH);
+                newLeftBackTarget = robot.leftBackDrive.getCurrentPosition() + (int) (inches * robot.STRAFING_COUNTS_PER_INCH);
+                newRightFrontTarget = robot.rightFrontDrive.getCurrentPosition() + (int) (inches * robot.STRAFING_COUNTS_PER_INCH);
+            } else {
+                newLeftFrontTarget = robot.leftFrontDrive.getCurrentPosition() + (int) (inches * robot.STRAFING_COUNTS_PER_INCH);
+                newRightBackTarget = robot.rightBackDrive.getCurrentPosition() + (int) (inches * robot.STRAFING_COUNTS_PER_INCH);
+                newLeftBackTarget = robot.leftBackDrive.getCurrentPosition() + (int) (-inches * robot.STRAFING_COUNTS_PER_INCH);
+                newRightFrontTarget = robot.rightFrontDrive.getCurrentPosition() + (int) (-inches * robot.STRAFING_COUNTS_PER_INCH);
+            }
+            telemetry.addData("current Postion", robot.leftBackDrive.getCurrentPosition());
+
+            robot.leftFrontDrive.setTargetPosition(newLeftFrontTarget);
+            robot.rightFrontDrive.setTargetPosition(newRightFrontTarget);
+            robot.leftBackDrive.setTargetPosition(newLeftBackTarget);
+            robot.rightBackDrive.setTargetPosition(newRightBackTarget);
+
+            telemetry.addData("NewLeftBackTarget", newLeftBackTarget);
+            telemetry.update();
+            sleep(100);
+
+            robot.leftFrontDrive.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            robot.rightFrontDrive.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            robot.leftBackDrive.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            robot.rightBackDrive.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+            runtime.reset();
+
+            robot.leftFrontDrive.setPower(strafingSpeed);
+            robot.rightFrontDrive.setPower(strafingSpeed);
+            robot.leftBackDrive.setPower(strafingSpeed);
+            robot.rightBackDrive.setPower(strafingSpeed);
+
+            // This while loop is NECESSARY to keep the motor running to its position
+            while (opModeIsActive() &&
+                    (runtime.seconds() < timeoutS) &&
+                    (robot.leftBackDrive.isBusy() && robot.rightBackDrive.isBusy())) {
+
+                // Display it for the driver.
+                telemetry.addData("Path1", "Running to %7d :%7d", newLeftBackTarget, newRightBackTarget);
+                telemetry.addData("Path2", "Running at %7d :%7d",
+                        robot.leftBackDrive.getCurrentPosition(),
+                        robot.rightBackDrive.getCurrentPosition());
+                telemetry.update();
+            }
+
+            // Stop all motion;
+            robot.leftBackDrive.setPower(0);
+            robot.rightBackDrive.setPower(0);
+            robot.leftFrontDrive.setPower(0);
+            robot.rightFrontDrive.setPower(0);
+
+            // Turn off RUN_TO_POSITION
+            robot.leftBackDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+            robot.rightBackDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+            robot.leftFrontDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+            robot.rightFrontDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
         }
     }
 }
