@@ -1,3 +1,15 @@
+/*****************************************************************************************************
+
+ Event: FTC Skystone 2019
+ Author : Team Roboteks # 6155
+ OpMode Name: HardwareSkystone
+ File Name: HardwareSkystone.java
+ Created on: 9-25-19
+ Last Modified on: 10-20-19
+ OpMode Description: This code is to initialize all the different variables, motors, servos, and
+ webcams on the robot. It also sets the direction of the wheel motors and servos we are using.
+
+ *****************************************************************************************************/
 /* Copyright (c) 2017 FIRST. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
@@ -108,7 +120,7 @@ public class HardwareSkystone
     static final public double GYRO_TOLERANCE = 2.5;
 
     // Robot Sensor Variables
-    ColorSensor colorSensor;
+    public ColorSensor colorSensor;
 
     public WebcamName webcamName = null;
 
