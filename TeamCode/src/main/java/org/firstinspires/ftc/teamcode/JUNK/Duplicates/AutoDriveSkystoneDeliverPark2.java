@@ -371,6 +371,7 @@ public class AutoDriveSkystoneDeliverPark2 extends LinearOpMode {
         // Tap the preview window to receive a fresh image.
 
         targetsSkyStone.activate();
+        sleep(1000);
         while (!isStopRequested()) {
 
             // check all the trackable targets to see which one (if any) is visible.
@@ -408,6 +409,8 @@ public class AutoDriveSkystoneDeliverPark2 extends LinearOpMode {
                 skystoneYOffset = translation.get(1) / mmPerInch;
 
                 telemetry.addData("Skystone X Offset", skystoneXOffset);
+
+
 
                 // express the rotation of the robot in degrees.
                 Orientation rotation = Orientation.getOrientation(lastLocation, EXTRINSIC, XYZ, DEGREES);
@@ -455,7 +458,7 @@ public class AutoDriveSkystoneDeliverPark2 extends LinearOpMode {
             else {
                 skystonePositon = "Skystone Pos. 3";
                 telemetry.addData("Skystone Position",skystonePositon );
-                encoderDrive(0.3,13,13,3);
+                encoderDrive(0.3,13.5,13.5,3);
                 encoderStrafe(0.2,12,3,false);
                 robot.pickerArmServo.setPosition(robot.SERVO90);
                 sleep(500);
@@ -481,7 +484,7 @@ public class AutoDriveSkystoneDeliverPark2 extends LinearOpMode {
             robot.pickerArmServo.setPosition(robot.SERVO0);
             encoderStrafe(0.3, 68, 10,false);
             gyroDrive(0,0.1,false);
-            encoderDrive(0.2,14,14,4);
+            encoderDrive(0.2,13,13,4);
             robot.pickerArmServo.setPosition(robot.SERVO90);
             sleep(500);
             encoderDrive(0.2,-17,-17,4);
@@ -498,7 +501,7 @@ public class AutoDriveSkystoneDeliverPark2 extends LinearOpMode {
             robot.pickerArmServo.setPosition(robot.SERVO0);
             encoderStrafe(0.3, 72, 10, false);
             gyroDrive(0, 0.1, false);
-            encoderDrive(0.2, 14.5, 14.5, 4);
+            encoderDrive(0.2, 13.5, 13.5, 4);
             robot.pickerArmServo.setPosition(robot.SERVO90);
             sleep(1000);
             encoderDrive(0.2, -14, -14, 4);
@@ -511,16 +514,16 @@ public class AutoDriveSkystoneDeliverPark2 extends LinearOpMode {
             telemetry.addData("Skystone Position", skystonePositon);
             encoderStrafe(0.4, 55, 10, true);
             robot.pickerArmServo.setPosition(robot.SERVO0);
-            encoderStrafe(0.3, 76, 10, false);
+            encoderStrafe(0.3, 70, 10, false);
             gyroDrive(0, 0.1, false);
-            encoderDrive(0.2, 14.5, 14.5, 4);
-            //robot.pickerArmServo.setPosition(robot.SERVO90);
-            //sleep(1000);
+            encoderDrive(0.2, 13.2, 13.2, 4);
+            robot.pickerArmServo.setPosition(robot.SERVO90);
+            sleep(1000);
             encoderDrive(0.2, -14.1, -14.1, 4);
             encoderStrafe(0.4, 77,8 , true);
             robot.pickerArmServo.setPosition(robot.SERVO0);
             //sleep(500);
-            encoderStrafe(0.1, 21, 10, false);
+            encoderStrafe(0.4, 21, 10, false);
 
         }
 

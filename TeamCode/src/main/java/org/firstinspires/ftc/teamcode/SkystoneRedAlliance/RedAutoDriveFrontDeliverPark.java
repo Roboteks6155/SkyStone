@@ -384,6 +384,7 @@ public class RedAutoDriveFrontDeliverPark extends LinearOpMode {
         // Tap the preview window to receive a fresh image.
 
         targetsSkyStone.activate();
+        sleep(1000);
         while (!isStopRequested()) {
 
             // check all the trackable targets to see which one (if any) is visible.

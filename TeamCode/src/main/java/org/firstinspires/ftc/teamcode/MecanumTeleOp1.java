@@ -117,12 +117,7 @@ public class MecanumTeleOp1 extends LinearOpMode {
                 robot.rightCollectorMotor.setPower(1);
             }
 
-            //an IF loop to rotate the repositioning arm up and down
-       /* if (gamepad1.y){
-            robot.servoRepositioning.setPosition(0.32);
-        } else if (gamepad1.a){
-            robot.servoRepositioning.setPosition(0);
-        }*/
+
             // press x to make repositioning arm go up or down
             xCurrentState = gamepad1.x; // gets current value of x
             if (xCurrentState && (xCurrentState != xPrevState)) { //checks if current state is true and if previous state is not equal to current state
@@ -134,7 +129,6 @@ public class MecanumTeleOp1 extends LinearOpMode {
                 }
             }
             xPrevState = xCurrentState; // update the previous state
-
 
 
             aCurrentState = gamepad1.a; // gets current value of a
@@ -150,20 +144,12 @@ public class MecanumTeleOp1 extends LinearOpMode {
             }
             aPrevState = aCurrentState; // update the previous state
 
-            //Claw for placing
-            //an IF loop for the cascading claw
-           /*if (gamepad2.dpad_left){
-                robot.armServo.setPosition(0);
-           } else if (gamepad2.dpad_right){
-                robot.armServo.setPosition(0.388888888888);
-            }
-            */
             // press y to make cascading claw to release or grab
             yCurrentState = gamepad2.y;
             if (yCurrentState && (yCurrentState != yPrevState)) {
                 robot.isCascadingClaw = !robot.isCascadingClaw;
                 if (robot.isCascadingClaw) {
-                    robot.servoCascadingClaw.setPosition(0.225);
+                    robot.servoCascadingClaw.setPosition(0.36);
                 } else {
                     robot.servoCascadingClaw.setPosition(0);
 
@@ -171,12 +157,7 @@ public class MecanumTeleOp1 extends LinearOpMode {
             }
             // press to make the picker arm release and grab
             yPrevState = yCurrentState;
-        /* if (gamepad2.left_bumper) {
-            robot.pickerClawServo.setPosition(0.15);
-        } else if (gamepad2.right_bumper) {
-            robot.pickerClawServo.setPosition(0);
-        }
-       */
+
             // press y to make picker claw to release or grab
             bCurrentState = gamepad2.b;
             if (bCurrentState && (bCurrentState != bPrevState)) {
@@ -190,11 +171,6 @@ public class MecanumTeleOp1 extends LinearOpMode {
             }
             bPrevState = bCurrentState;
 
-            /*if (gamepad2.y) {
-                robot.pickerArmServo.setPosition(0.32);
-            } else if (gamepad2.a) {
-                robot.pickerArmServo.setPosition(0);
-            */
             // press x to make picker arm go up or down
             x2CurrentState = gamepad2.x;
             if (x2CurrentState && (x2CurrentState != x2PrevState)) {

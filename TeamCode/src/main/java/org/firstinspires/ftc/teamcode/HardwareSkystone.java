@@ -171,7 +171,7 @@ public class HardwareSkystone
         // initialize positions of servos
         servoRepositioning.setPosition(SERVO0);
         pickerArmServo.setPosition(SERVO0);
-
+        //leftCollectorServo.setPosition();
 
 
         // Set all motors to zero power
