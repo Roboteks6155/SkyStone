@@ -36,8 +36,8 @@ public class SkystoneFollower {
         withinXTolerance = Math.abs(xError) <= xTolerance;
         withinYTolerance = Math.abs(yError) <= yTolerance;
 
-        double forward = xError * fwdFactor;
         double strafe = yError * strafeFactor;
+        double forward = xError * fwdFactor;
 
         return new double[]{strafe, forward};
     }
@@ -53,6 +53,7 @@ public class SkystoneFollower {
     public boolean withinTolerance() {
         return withinYTolerance() && withinXTolerance();
     }
+
 
     public double getYTolerance() {
         return yTolerance;

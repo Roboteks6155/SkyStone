@@ -1,16 +1,3 @@
-/*****************************************************************************************************
-
- Event: FTC Skystone 2019
- Author : Team Roboteks # 6155
- OpMode Name: RedAutoDriveFrontDeliverPark
- File Name: RedAutoDriveFrontDeliverPark.java
- Created on: 10-3-19
- Last Modified on: 10-20-19
- OpMode Description: This OpMode is for Autonomous drive where the robot starts facing the Skystones, senses
- and picks the first Skystone, delivers it, strafes back to the second skystone, picks it, delivers it, then
- parks under the Skybridge
-
- *****************************************************************************************************/
 /* Copyright (c) 2019 FIRST. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
@@ -40,7 +27,7 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package org.firstinspires.ftc.teamcode.SkystoneRedAlliance;
+package org.firstinspires.ftc.teamcode.SkystoneBlueAlliance;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
@@ -99,9 +86,9 @@ import static org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocaliz
  */
 
 
-@Autonomous(name="RedAutoDriveFrontDeliverPark",group= "RedSkystone" )
+@Autonomous(name="RedAutoDriveFrontSkystoneDeliverPark",group= "Skystone" )
 //@Disabled
-public class RedAutoDriveFrontDeliverPark extends LinearOpMode {
+public class BlueAutoDriveFrontSkystoneDeliverPark extends LinearOpMode {
 
     /* Declare OpMode member. */
     HardwareSkystone robot = new HardwareSkystone();
@@ -423,6 +410,8 @@ public class RedAutoDriveFrontDeliverPark extends LinearOpMode {
 
                 telemetry.addData("Skystone X Offset", skystoneXOffset);
 
+
+
                 // express the rotation of the robot in degrees.
                 Orientation rotation = Orientation.getOrientation(lastLocation, EXTRINSIC, XYZ, DEGREES);
                 telemetry.addData("Rot (deg)", "{Roll, Pitch, Heading} = %.0f, %.0f, %.0f", rotation.firstAngle, rotation.secondAngle, rotation.thirdAngle);
@@ -441,7 +430,7 @@ public class RedAutoDriveFrontDeliverPark extends LinearOpMode {
                     robot.rightBackDrive.setPower(0);
                     robot.leftFrontDrive.setPower(0);
                     sleep(2000);*/
-                    encoderStrafe(0.2,-skystoneXOffset - 1,10,true);
+                    encoderStrafe(0.2,-skystoneXOffset - 1,10,false);
                     robot.pickerArmServo.setPosition(robot.SERVO90);
                     sleep(1000);
                     break;
@@ -459,7 +448,7 @@ public class RedAutoDriveFrontDeliverPark extends LinearOpMode {
                     robot.rightBackDrive.setPower(0);
                     robot.leftFrontDrive.setPower(0);
                     sleep(2000);*/
-                    encoderStrafe(0.2, skystoneXOffset-0,10,false);
+                    encoderStrafe(0.2, skystoneXOffset-0,10,true);
                     robot.pickerArmServo.setPosition(robot.SERVO90);
                     sleep(1000);
                     break;
@@ -469,8 +458,8 @@ public class RedAutoDriveFrontDeliverPark extends LinearOpMode {
             else {
                 skystonePositon = "Skystone Pos. 3";
                 telemetry.addData("Skystone Position",skystonePositon );
-                encoderDrive(0.3,13,13,3);
-                encoderStrafe(0.2,12,3,false);
+                encoderDrive(0.3,13.5,13.5,3);
+                encoderStrafe(0.2,12,3,true);
                 robot.pickerArmServo.setPosition(robot.SERVO90);
                 sleep(500);
 
@@ -486,55 +475,55 @@ public class RedAutoDriveFrontDeliverPark extends LinearOpMode {
             encoderDrive(0.2,-13,-13,10);
             telemetry.addData("Skystone Position",skystonePositon );
             //sleep(100);
-            encoderStrafe(0.4,48,10,true);
+            encoderStrafe(0.4,48,10,false);
             /*robot.rightFrontDrive.setPower(-0.3);
             robot.leftBackDrive.setPower(-0.3);
             robot.rightBackDrive.setPower(0.3);
             robot.leftFrontDrive.setPower(0.3);
             sleep(2000);*/
             robot.pickerArmServo.setPosition(robot.SERVO0);
-            encoderStrafe(0.3, 68, 10,false);
+            encoderStrafe(0.3, 68, 10,true);
             gyroDrive(0,0.1,false);
-            encoderDrive(0.2,14,14,4);
+            encoderDrive(0.2,13,13,4);
             robot.pickerArmServo.setPosition(robot.SERVO90);
             sleep(500);
             encoderDrive(0.2,-17,-17,4);
-            encoderStrafe(0.3, 75, 10,true);
+            encoderStrafe(0.3, 75, 10,false);
             robot.pickerArmServo.setPosition(robot.SERVO0);
             sleep(100);
-            encoderStrafe(0.4, 25, 10,false);
+            encoderStrafe(0.4, 25, 10,true);
         }
 
         else if (skystonePositon == "Skystone Pos. 2") {
             encoderDrive(0.2, -10, -10, 10);
             telemetry.addData("Skystone Position", skystonePositon);
-            encoderStrafe(0.4, 50, 10, true);
+            encoderStrafe(0.4, 50, 10, false);
             robot.pickerArmServo.setPosition(robot.SERVO0);
-            encoderStrafe(0.3, 72, 10, false);
+            encoderStrafe(0.3, 72, 10, true);
             gyroDrive(0, 0.1, false);
-            encoderDrive(0.2, 14.5, 14.5, 4);
+            encoderDrive(0.2, 13.5, 13.5, 4);
             robot.pickerArmServo.setPosition(robot.SERVO90);
             sleep(1000);
             encoderDrive(0.2, -14, -14, 4);
-            encoderStrafe(0.4, 75.25,70 , true);
+            encoderStrafe(0.4, 75.25,70 , false);
             robot.pickerArmServo.setPosition(robot.SERVO0);
             //sleep(500);
-            encoderStrafe(0.4, 20, 10, false);
+            encoderStrafe(0.4, 20, 10, true);
         } else if (skystonePositon == "Skystone Pos. 3"){
             encoderDrive(0.2, -10, -10, 10);
             telemetry.addData("Skystone Position", skystonePositon);
-            encoderStrafe(0.4, 55, 10, true);
+            encoderStrafe(0.4, 55, 10, false);
             robot.pickerArmServo.setPosition(robot.SERVO0);
-            encoderStrafe(0.3, 76, 10, false);
+            encoderStrafe(0.3, 70, 10, true);
             gyroDrive(0, 0.1, false);
-            encoderDrive(0.2, 14.5, 14.5, 4);
-            //robot.pickerArmServo.setPosition(robot.SERVO90);
-            //sleep(1000);
+            encoderDrive(0.2, 13.2, 13.2, 4);
+            robot.pickerArmServo.setPosition(robot.SERVO90);
+            sleep(1000);
             encoderDrive(0.2, -14.1, -14.1, 4);
-            encoderStrafe(0.4, 77,8 , true);
+            encoderStrafe(0.4, 77,8 , false);
             robot.pickerArmServo.setPosition(robot.SERVO0);
             //sleep(500);
-            encoderStrafe(0.1, 21, 10, false);
+            encoderStrafe(0.4, 21, 10, false);
 
         }
 

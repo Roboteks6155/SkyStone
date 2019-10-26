@@ -17,8 +17,8 @@ public class AutoDriveSkystoneDelvierPark extends LinearOpMode {
     HardwareSkystone robot = new HardwareSkystone();   // Use a Pushbot's hardware
     VuforiaSkystoneDetector vuforia = new VuforiaSkystoneDetector(true);
     SkystoneFollower follower = new SkystoneFollower();
-    private ElapsedTime runtime = new ElapsedTime();
     SkystonePosition skystonePosition = null;
+    private ElapsedTime runtime = new ElapsedTime();
 
     @Override
     public void runOpMode() {
@@ -40,28 +40,26 @@ public class AutoDriveSkystoneDelvierPark extends LinearOpMode {
 
         if (opModeIsActive()) {
             encoderDrive(0.2, 14, 14, 3);
-            sleep(750);
-            while (opModeIsActive()) {
+            sleep(750);                                         //See Roshans program - runtime is reset here
+            while (opModeIsActive()) {                                    //See Roshans program - while condition is different
                 vuforia.gatherData();
-
-                if(skystonePosition == null) {
-                   if (vuforia.getXTranslation() < 0) {
-
-                       telemetry.addData("X Offset", vuforia.getXTranslation());
-                       telemetry.update();
-                       sleep(3000);
+                                                                          //See Roshans program - while loop is closed here
+                if (skystonePosition == null) {
+                    if (vuforia.getXTranslation() < 0) {
+                        telemetry.addData("X Offset", vuforia.getXTranslation());
+                        telemetry.update();
+                        sleep(3000);
 
                         skystonePosition = SkystonePosition.RIGHT;
                     } else if (vuforia.getXTranslation() > 0) {
                         skystonePosition = SkystonePosition.CENTER;
-                  // break;//
                     } else {
                         skystonePosition = SkystonePosition.LEFT;
                         encoderStrafe(0.2, 5, 3, false);
                     }
                     telemetry.addData("Position", skystonePosition.toString());
                     telemetry.update();
-                    trackTarget();//
+                    trackTarget();
                 }
 
 
@@ -71,7 +69,8 @@ public class AutoDriveSkystoneDelvierPark extends LinearOpMode {
     }
 
     private void trackTarget() {
-        while (vuforia.isTargetVisible() && !follower.withinTolerance()) {
+        while (vuforia.isTargetVisible() && !follower.withinTolerance()) {          //See Roshans program - different condition
+                                                                                    //See Roshans program - gatherData here
             double xOffset = vuforia.getXTranslation();
             double yOffset = vuforia.getYTranslation();
 
@@ -79,10 +78,10 @@ public class AutoDriveSkystoneDelvierPark extends LinearOpMode {
             telemetry.addData("Y Offset", yOffset);
 
             double[] outputs = follower.calculateOutput(xOffset, yOffset);
-            double strafe = outputs[01], forward = outputs[0];
+            double strafe = outputs[1], forward = outputs[0];                       //See Roshans program - interchanged
             follower.setYTarget(-1.0);
 
-            MecanumMove(forward/2, strafe/2, 0);
+            MecanumMove(forward/2, strafe/2, 0);                  //See Roshans program - not halved
 
             telemetry.addData("Is target visable", vuforia.isTargetVisible());
             telemetry.addData("Is within tolerance", follower.withinTolerance());
@@ -117,10 +116,10 @@ public class AutoDriveSkystoneDelvierPark extends LinearOpMode {
             rightBackPower /= max;
         }
         //Sets the powers of the wheels
-        robot.leftBackDrive.setPower(-leftBackPower);
-        robot.rightBackDrive.setPower(-rightBackPower);
-        robot.leftFrontDrive.setPower(-leftFrontPower);
-        robot.rightFrontDrive.setPower(-rightFrontPower);
+        robot.leftBackDrive.setPower(-leftBackPower);                                   //See Roshans program - not negative values
+        robot.rightBackDrive.setPower(-rightBackPower);                                 //See Roshans program - not negative values
+        robot.leftFrontDrive.setPower(-leftFrontPower);                                 //See Roshans program - not negative values
+        robot.rightFrontDrive.setPower(-rightFrontPower);                               //See Roshans program - not negative values
     }
 
     public void encoderDrive(double speed,

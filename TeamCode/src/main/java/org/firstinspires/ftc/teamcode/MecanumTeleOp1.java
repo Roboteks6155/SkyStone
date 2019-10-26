@@ -87,7 +87,7 @@ public class MecanumTeleOp1 extends LinearOpMode {
         while (opModeIsActive()) {
 
             //variable that assigns what joystick will give the power for vertical movement
-            double cascadingHorizontalPower = gamepad2.left_stick_x;
+            double cascadingHorizontalPower = gamepad2.right_stick_x;
             double cascadingVerticalPower = gamepad2.left_stick_y;
 
             //variable that assigns what trigger will give power to each compliant wheel
@@ -106,7 +106,7 @@ public class MecanumTeleOp1 extends LinearOpMode {
 
             //sets the power of the motors controlling the compliant wheels
             robot.leftCollectorMotor.setPower(leftCollectorPower);
-            robot.rightCollectorMotor.setPower(-rightCollectorPower);
+            robot.rightCollectorMotor.setPower(rightCollectorPower);
 
             //method that is used to make the robot move
             MecanumMove(forward, strafe, rotate);
@@ -114,7 +114,7 @@ public class MecanumTeleOp1 extends LinearOpMode {
             //an IF loop to spin the compliant wheels outwards
             if (gamepad1.b) {
                 robot.leftCollectorMotor.setPower(-1);
-                robot.rightCollectorMotor.setPower(1);
+                robot.rightCollectorMotor.setPower(-1);
             }
 
 
@@ -133,13 +133,13 @@ public class MecanumTeleOp1 extends LinearOpMode {
 
             aCurrentState = gamepad1.a; // gets current value of a
             if (aCurrentState && (aCurrentState != aPrevState)) { //checks if current state is true and if previous state is not equal to current state
-                robot.isIntake = !robot.isIntake;    // reverse the value of isReposition EX: if isReposition true, then change to false
-                if (robot.isIntake) {    //check if isReposition is true
-                    robot.rightCollectorServo.setPosition(0.48);    // make the repositioning arm go down (to 170 degrees)
-                    robot.leftCollectorServo.setPosition(0);    // make the repositioning arm go down (to 170 degrees)
-                } else {  // if isReposition is true then do the conditon below
-                    robot.rightCollectorServo.setPosition(0);     // make the repositioning arm go up (to starting position(0 degrees))
-                    robot.leftCollectorServo.setPosition(0.48);     // make the repositioning arm go up (to starting position(0 degrees))
+                robot.isIntake = !robot.isIntake;    // reverse the value of isIntake
+                if (robot.isIntake) {    //check if isIntake is true
+                    robot.rightCollectorServo.setPosition(0.42);    // make the rightCollectorServo arm go up
+                    robot.leftCollectorServo.setPosition(0.04);    // make the leftCollectorServo arm go up
+                } else {  // if isIntake is false then do the condition below
+                    robot.rightCollectorServo.setPosition(0.02);   // make the rightCollectorServo go down
+                    robot.leftCollectorServo.setPosition(0.43);     // make the leftCollectorServo go down
                 }
             }
             aPrevState = aCurrentState; // update the previous state
