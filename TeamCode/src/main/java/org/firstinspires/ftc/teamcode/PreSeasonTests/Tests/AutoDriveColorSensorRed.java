@@ -56,7 +56,7 @@ import org.firstinspires.ftc.teamcode.HardwareSkystone;
  */
 
 @Autonomous(name="AutoDriveColorSensor", group="Pushbot")
-//@Disabled
+@Disabled
 public class AutoDriveColorSensorRed extends LinearOpMode {
 
     HardwareSkystone robot   = new HardwareSkystone();   // Use Skystone Hardware

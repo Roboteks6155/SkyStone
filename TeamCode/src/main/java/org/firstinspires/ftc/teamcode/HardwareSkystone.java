@@ -84,11 +84,14 @@ public class HardwareSkystone
     public final double     DRIVE_SPEED             = 0.6;
     public final double     TURN_SPEED              = 0.5;
     static public final double     COUNTS_PER_MOTOR_REV_GOBILDA    = 753.2 ;    // For Gobilda Motor Encoder
+    static public final double     COUNTS_PER_MOTOR_REV_NEVEREST    = 1120 ;    // For Neverest 40 Motor Encoder
     static public final double     DRIVE_GEAR_REDUCTION    = 0.6666 ;     // This is < 1.0 if geared UP
     public final double     WHEEL_DIAMETER_INCHES   = 4.0 ;     // For figuring circumference
     public final double     COUNTS_PER_INCH_GOBILDA         = (COUNTS_PER_MOTOR_REV_GOBILDA * DRIVE_GEAR_REDUCTION) / (WHEEL_DIAMETER_INCHES * 3.1415);
     static final double INCHES_PER_ROTATION_STRAFING = 10.6;
     static public final double STRAFING_COUNTS_PER_INCH = (COUNTS_PER_MOTOR_REV_GOBILDA * DRIVE_GEAR_REDUCTION) / (INCHES_PER_ROTATION_STRAFING);
+    static public final double VERTICAL_CASCADEPULLY_INCHES_PER_ROTATION = 1.37;
+    static public final double VERTICAL_CASCADEPULLY_COUNTS_PER_INCH = (COUNTS_PER_MOTOR_REV_NEVEREST ) / (VERTICAL_CASCADEPULLY_INCHES_PER_ROTATION);
     //Proportional Control Variables
     public double TOLERANCE = 5;
     public double PROPORTIONAL_CONSTANT;
@@ -114,6 +117,7 @@ public class HardwareSkystone
     public final double SERVO0 = 0.32;
     public final double SERVO90 = 0;
 
+    public boolean isManual = false;
 
     //Variables for using IMU/Gyro
     public BNO055IMU imu = null;
@@ -151,7 +155,7 @@ public class HardwareSkystone
         /*
          * Retrieve the camera we are to use.
          */
-        webcamName = hwMap.get(WebcamName.class, "Webcam");
+        //webcamName = hwMap.get(WebcamName.class, "Webcam");
 
         servoCascadingClaw = hwMap.get(Servo.class,"CascadingClawServo");
         servoRepositioning = hwMap.get(Servo.class,"servoRepositioning");
@@ -161,6 +165,7 @@ public class HardwareSkystone
         rightCollectorServo = hwMap.get(Servo.class, "rightCollectorServo");
         colorSensor =  hwMap.get(ColorSensor.class, "colorsensor");
 
+        cascadingVerticalArm.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         leftFrontDrive.setDirection(DcMotor.Direction.REVERSE); // Set to REVERSE if using AndyMark motors
         rightFrontDrive.setDirection(DcMotor.Direction.FORWARD);// Set to FORWARD if using AndyMark motors
         leftBackDrive.setDirection(DcMotor.Direction.REVERSE); // Set to REVERSE if using AndyMark motors
@@ -219,4 +224,6 @@ public class HardwareSkystone
         imu.initialize(parameters);
 
     }
+
+
 }

@@ -1,125 +1,110 @@
-package org.firstinspires.ftc.teamcode.ProportionalControl;
+package org.firstinspires.ftc.teamcode.SkystoneBlueAlliance;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
+import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
+import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
 import org.firstinspires.ftc.teamcode.HardwareSkystone;
 
-@Disabled
-@Autonomous(name = "AutoDriveSkystoneDelvierPark", group = "Skystone")
+/**
+ * This file illustrates the concept of driving a path based on encoder counts.
+ * It uses the common Pushbot hardware class to define the drive on the robot.
+ * The code is structured as a LinearOpMode
+ *
+ * The code REQUIRES that you DO have encoders on the wheels,
+ *   otherwise you would use: PushbotAutoDriveByTime;
+ *
+ *  This code ALSO requires that the drive Motors have been configured such that a positive
+ *  power command moves them forwards, and causes the encoders to count UP.
+ *
+ *   The desired path in this example is:
+ *   - Drive forward for 48 inches
+ *   - Spin right for 12 Inches
+ *   - Drive Backwards for 24 inches
+ *   - Stop and close the claw.
+ *
+ *  The code is written using a method called: encoderDrive(speed, leftInches, rightInches, timeoutS)
+ *  that performs the actual movement.
+ *  This methods assumes that each movement is relative to the last stopping place.
+ *  There are other ways to perform encoder based moves, but this method is probably the simplest.
+ *  This code uses the RUN_TO_POSITION mode to enable the Motor controllers to generate the run profile
+ *
+ * Use Android Studios to Copy this Class, and Paste it into your team's code folder with a new name.
+ * Remove or comment out the @Disabled line to add this opmode to the Driver Station OpMode list
+ */
 
-public class AutoDriveSkystoneDelvierPark extends LinearOpMode {
+@Autonomous(name="BlueAutoDriveStrafeLeftPark", group="BlueSkystone")
+//@Disabled
+public class BlueAutoDriveStrafeLeftPark extends LinearOpMode {
+
     /* Declare OpMode members. */
-    HardwareSkystone robot = new HardwareSkystone();   // Use a Pushbot's hardware
-    VuforiaSkystoneDetector vuforia = new VuforiaSkystoneDetector(true);
-    SkystoneFollower follower = new SkystoneFollower();
-    SkystonePosition skystonePosition = null;
-    private ElapsedTime runtime = new ElapsedTime();
+
+    HardwareSkystone robot   = new HardwareSkystone();   // Use a Pushbot's hardware
+    private ElapsedTime     runtime = new ElapsedTime();
+
+    static final double     COUNTS_PER_MOTOR_REV    = 573.2 ;    // eg: Neverest Motor Encoder
+    static final double     DRIVE_GEAR_REDUCTION    = 1.5 ;     // This is < 1.0 if geared UP
+    static final double     WHEEL_DIAMETER_INCHES   = 4.0 ;     // For figuring circumference
+    static final double     COUNTS_PER_INCH         = (COUNTS_PER_MOTOR_REV * DRIVE_GEAR_REDUCTION) /
+            (WHEEL_DIAMETER_INCHES * 3.1415);
+    static final double     DRIVE_SPEED             = 0.3;
+    static final double     TURN_SPEED              = 0.5;
+
+    //Tolerance for gyroDrive
+    static final double GYRO_TOLERANCE = 5;
 
     @Override
     public void runOpMode() {
-        /* Initialize the hardware variables.
+
+        /*
+         * Initialize the drive system variables.
          * The init() method of the hardware class does all the work here
          */
         robot.init(hardwareMap);
 
         // Send telemetry message to signify robot waiting;
-        telemetry.addData("Say", "Hello Driver");    //
+        telemetry.addData("Status", "Resetting Encoders");    //
         telemetry.update();
 
-        vuforia.init(hardwareMap);
+        robot.leftFrontDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        robot.rightFrontDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        robot.leftBackDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        robot.rightBackDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+
+
+        robot.leftFrontDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        robot.rightFrontDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        robot.leftBackDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        robot.rightBackDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
+        // Send telemetry message to indicate successful Encoder reset
+        telemetry.addData("Path0",  "Starting at %7d :%7d");
+        robot.leftFrontDrive.getCurrentPosition();
+        robot.rightFrontDrive.getCurrentPosition();
+        robot.leftBackDrive.getCurrentPosition();
+        robot.rightBackDrive.getCurrentPosition();
+
+        telemetry.update();
+
         // Wait for the game to start (driver presses PLAY)
         waitForStart();
 
-        // run until the end of the match (driver presses STOP)
-        vuforia.start();
-
-        if (opModeIsActive()) {
-            encoderDrive(0.2, 14, 14, 3);
-            runtime.reset();
-            while (!vuforia.isTargetVisible() || runtime.seconds() < 0.75) {
-                telemetry.addData("Time", runtime.seconds());
-                telemetry.update();
-                vuforia.gatherData();
-            }
-
-            if (skystonePosition == null) {
-                if (vuforia.getXTranslation() < 0) {
-                   /* telemetry.addData("X Offset", vuforia.getXTranslation());
-                    telemetry.update();
-                    sleep(2000); */
-                    skystonePosition = SkystonePosition.RIGHT;
-                } else if (vuforia.getXTranslation() > 0) {
-                    skystonePosition = SkystonePosition.CENTER;
-                } else {
-                    skystonePosition = SkystonePosition.LEFT;
-                    encoderStrafe(0.2, 5, 3, false);
-                }
-                telemetry.addData("Position", skystonePosition.toString());
-                telemetry.update();
-                trackTarget();
-            }
-
-
-        }
-        vuforia.stop();
+        //Making robot strafe right to park under the Skybridge
+        encoderStrafe(0.3,9,2, false);
     }
 
-    private void trackTarget() {
-        while (opModeIsActive() && vuforia.isTargetVisible() && !follower.withinTolerance()) {
-            vuforia.gatherData();
-            double xOffset = vuforia.getXTranslation();
-            double yOffset = vuforia.getYTranslation();
-
-            telemetry.addData("X Offset", xOffset);
-            telemetry.addData("Y Offset", yOffset);
-            follower.setYTarget(0.2); //strafe   was (1.1)
-            follower.setXTarget(0.25); //forward  was (0.25)
-            double[] outputs = follower.calculateOutput(xOffset, yOffset);
-            double strafe = outputs[0], forward = outputs[1];
-
-            MecanumMove(forward, strafe, 0);
-
-
-            telemetry.addData("Strafe", strafe);
-            telemetry.addData("Forward", forward);
-            telemetry.update();
-        }
-        MecanumMove(0, 0, 0);
-//         else {
-//            telemetry.addData("Target:", "Not Visible");
-//            telemetry.update();
-//            MecanumMove(0, 0, 0);
-//        }
-    }
-
-    // Easier to understand and make changes when considering turning and strafing right
-    //This method is made to move the robot in all directions using the only two joysticks
-    private void MecanumMove(double forward, double strafe, double rotate) {
-
-        double leftFrontPower = forward + strafe + rotate;
-        double rightFrontPower = forward - strafe - rotate;
-        double leftBackPower = forward - strafe + rotate;
-        double rightBackPower = forward + strafe - rotate;
-
-        // Normalize the values so neither exceed +/- 1.0
-        double max = Math.max(Math.max(Math.abs(leftBackPower), Math.abs(rightBackPower)), Math.max(Math.abs(rightFrontPower), Math.abs(leftFrontPower)));
-
-        if (max > 1.0) {
-            leftFrontPower /= max;
-            rightFrontPower /= max;
-            leftBackPower /= max;
-            rightBackPower /= max;
-        }
-        //Sets the powers of the wheels
-        robot.leftBackDrive.setPower(leftBackPower);
-        robot.rightBackDrive.setPower(rightBackPower);
-        robot.leftFrontDrive.setPower(leftFrontPower);
-        robot.rightFrontDrive.setPower(rightFrontPower);
-    }
+    /*
+     *  Method to perfmorm a relative move, based on encoder counts.
+     *  Encoders are not reset as the move is based on the current position.
+     *  Move will stop if any of three conditions occur:
+     *  1) Move gets to the desired position
+     *  2) Move runs out of time
+     *  3) Driver stops the opmode running.
+     */
 
     public void encoderDrive(double speed,
                              double leftInches, double rightInches,
@@ -141,8 +126,8 @@ public class AutoDriveSkystoneDelvierPark extends LinearOpMode {
             robot.rightFrontDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
             // Determine new target position, and pass to motor controller
-            newLeftBackTarget = robot.leftBackDrive.getCurrentPosition() + (int) (leftInches * robot.COUNTS_PER_INCH_GOBILDA);
-            newRightBackTarget = robot.rightBackDrive.getCurrentPosition() + (int) (rightInches * robot.COUNTS_PER_INCH_GOBILDA);
+            newLeftBackTarget = robot.leftBackDrive.getCurrentPosition() + (int)(leftInches * robot.COUNTS_PER_INCH_GOBILDA);
+            newRightBackTarget = robot.rightBackDrive.getCurrentPosition() + (int)(rightInches * robot.COUNTS_PER_INCH_GOBILDA);
             //newLeftFrontTarget = robot.leftBackDrive.getCurrentPosition() + (int)(leftInches * robot.COUNTS_PER_INCH_GOBILDA);
             //newRightFrontTarget = robot.rightBackDrive.getCurrentPosition() + (int)(rightInches * robot.COUNTS_PER_INCH_GOBILDA);
 
@@ -179,8 +164,8 @@ public class AutoDriveSkystoneDelvierPark extends LinearOpMode {
                     (robot.leftBackDrive.isBusy() && robot.rightBackDrive.isBusy())) {
 
                 // Display it for the driver.
-                telemetry.addData("Path1", "Running to %7d :%7d", newLeftBackTarget, newRightBackTarget);
-                telemetry.addData("Path2", "Running at %7d :%7d",
+                telemetry.addData("Path1",  "Running to %7d :%7d", newLeftBackTarget,  newRightBackTarget);
+                telemetry.addData("Path2",  "Running at %7d :%7d",
                         robot.leftBackDrive.getCurrentPosition(),
                         robot.rightBackDrive.getCurrentPosition());
                 telemetry.update();
@@ -199,7 +184,7 @@ public class AutoDriveSkystoneDelvierPark extends LinearOpMode {
             robot.rightFrontDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
             // optional pause after each move
-            sleep(250);
+            //sleep(250);
         }
     }
 
@@ -238,7 +223,7 @@ public class AutoDriveSkystoneDelvierPark extends LinearOpMode {
 
             telemetry.addData("NewLeftBackTarget", newLeftBackTarget);
             telemetry.update();
-            sleep(100);
+            //sleep(2000);
 
             robot.leftFrontDrive.setMode(DcMotor.RunMode.RUN_TO_POSITION);
             robot.rightFrontDrive.setMode(DcMotor.RunMode.RUN_TO_POSITION);
@@ -277,6 +262,39 @@ public class AutoDriveSkystoneDelvierPark extends LinearOpMode {
             robot.leftFrontDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
             robot.rightFrontDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
+            // optional pause after each move
+            //sleep(250);
         }
     }
+
+    public void gyroDrive(double targetAngle, double speed, boolean turnCCW){
+        double currentHeading = robot.imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES).firstAngle;
+
+        //leftDrive.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        //rightDrive.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+
+        if(opModeIsActive()){
+            while(opModeIsActive() && (Math.abs(targetAngle - currentHeading) >= GYRO_TOLERANCE)){
+                currentHeading = robot.imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES).firstAngle;
+
+                double sign = turnCCW ? -1 : 1;
+                robot.leftBackDrive.setPower(speed * sign);
+                robot.rightBackDrive.setPower(speed * -sign);
+                robot.leftFrontDrive.setPower(speed * sign);
+                robot.rightFrontDrive.setPower(speed * -sign);
+
+                telemetry.addData("Base Power", speed);
+                telemetry.addData("Angle", currentHeading);
+                telemetry.addData("Error", (Math.abs(targetAngle - currentHeading)));
+                telemetry.update();
+            }
+            robot.leftBackDrive.setPower(0);
+            robot.rightBackDrive.setPower(0);
+            robot.leftFrontDrive.setPower(0);
+            robot.rightFrontDrive.setPower(0);
+
+
+        }
+    }
+
 }

@@ -99,9 +99,9 @@ import static org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocaliz
  */
 
 
-@Autonomous(name="RedAutoDriveFrontSkystoneDeliverPark",group= "RedSkystone" )
+@Autonomous(name="RedAutoDriveFrontSkystoneDeliverParkPhone",group= "RedSkystone" )
 //@Disabled
-public class RedAutoDriveFrontSkystoneDeliverPark extends LinearOpMode {
+public class RedAutoDriveFrontSkystoneDeliverParkPhone extends LinearOpMode {
 
     /* Declare OpMode member. */
     HardwareSkystone robot = new HardwareSkystone();
@@ -201,7 +201,7 @@ public class RedAutoDriveFrontSkystoneDeliverPark extends LinearOpMode {
         /**
          * We also indicate which camera on the RC we wish to use.
          */
-        parameters.cameraName = robot.webcamName;
+       // parameters.cameraName = robot.webcamName;
 
         //  Instantiate the Vuforia engine
         vuforia = ClassFactory.getInstance().createVuforia(parameters);
@@ -377,14 +377,14 @@ public class RedAutoDriveFrontSkystoneDeliverPark extends LinearOpMode {
         robot.rightFrontDrive.setPower(0.0);
 */
 // make robot move forward using encoders
-        encoderDrive(0.2,16,16,5);
+        encoderDrive(0.2,18,18,5);
 
         // Note: To use the remote camera preview:
         // AFTER you hit Init on the Driver Station, use the "options menu" to select "Camera Stream"
         // Tap the preview window to receive a fresh image.
 
         targetsSkyStone.activate();
-        sleep(1000);
+        sleep(2000);
         while (!isStopRequested()) {
 
             // check all the trackable targets to see which one (if any) is visible.
@@ -430,7 +430,7 @@ public class RedAutoDriveFrontSkystoneDeliverPark extends LinearOpMode {
                 if (skystoneXOffset<0) {
                     skystonePositon = "Skystone Pos. 1";
                     telemetry.addData("Skystone Position", skystonePositon);
-                    encoderDrive(0.3,-skystoneYOffset -1.1,-skystoneYOffset -1.1,3);
+                    encoderDrive(0.3,-skystoneYOffset -9.6,-skystoneYOffset -9.6,3);
                     /*robot.rightFrontDrive.setPower(-0.3);
                     robot.leftBackDrive.setPower(-0.3);
                     robot.rightBackDrive.setPower(0.3);
@@ -441,14 +441,14 @@ public class RedAutoDriveFrontSkystoneDeliverPark extends LinearOpMode {
                     robot.rightBackDrive.setPower(0);
                     robot.leftFrontDrive.setPower(0);
                     sleep(2000);*/
-                    encoderStrafe(0.2,-skystoneXOffset - 1,10,true);
+                    encoderStrafe(0.2,-skystoneXOffset - 2,10,true);
                     robot.pickerArmServo.setPosition(robot.SERVO90);
                     sleep(1000);
                     break;
                 } else if (skystoneXOffset>0) {
                     skystonePositon = "Skystone Pos. 2";
                     telemetry.addData("Skystone Position", skystonePositon);
-                    encoderDrive(0.3,-skystoneYOffset -1,-skystoneYOffset -1,3);
+                    encoderDrive(0.3,-skystoneYOffset -9.9,-skystoneYOffset -9.9,3);
                     /*robot.rightFrontDrive.setPower(-0.3);
                     robot.leftBackDrive.setPower(-0.3);
                     robot.rightBackDrive.setPower(0.3);
@@ -459,7 +459,7 @@ public class RedAutoDriveFrontSkystoneDeliverPark extends LinearOpMode {
                     robot.rightBackDrive.setPower(0);
                     robot.leftFrontDrive.setPower(0);
                     sleep(2000);*/
-                    encoderStrafe(0.2, skystoneXOffset-0,10,false);
+                    encoderStrafe(0.2, skystoneXOffset+2,10,false);
                     robot.pickerArmServo.setPosition(robot.SERVO90);
                     sleep(1000);
                     break;
@@ -469,8 +469,8 @@ public class RedAutoDriveFrontSkystoneDeliverPark extends LinearOpMode {
             else {
                 skystonePositon = "Skystone Pos. 3";
                 telemetry.addData("Skystone Position",skystonePositon );
-                encoderDrive(0.3,13,13,3);
-                encoderStrafe(0.2,12,3,false);
+                encoderDrive(0.3,12,12,3);
+                encoderStrafe(0.2,13.5,3,false);
                 robot.pickerArmServo.setPosition(robot.SERVO90);
                 sleep(500);
 
@@ -493,16 +493,16 @@ public class RedAutoDriveFrontSkystoneDeliverPark extends LinearOpMode {
             robot.leftFrontDrive.setPower(0.3);
             sleep(2000);*/
             robot.pickerArmServo.setPosition(robot.SERVO0);
-            encoderStrafe(0.3, 68, 10,false);
+            encoderStrafe(0.3, 69, 10,false);
             gyroDrive(0,0.1,false);
             encoderDrive(0.2,14,14,4);
             robot.pickerArmServo.setPosition(robot.SERVO90);
             sleep(500);
             encoderDrive(0.2,-17,-17,4);
-            encoderStrafe(0.3, 75, 10,true);
+            encoderStrafe(0.3, 70, 10,true);
             robot.pickerArmServo.setPosition(robot.SERVO0);
             sleep(100);
-            encoderStrafe(0.4, 25, 10,false);
+            encoderStrafe(0.4, 20, 10,false);
         }
 
         else if (skystonePositon == "Skystone Pos. 2") {
@@ -512,29 +512,32 @@ public class RedAutoDriveFrontSkystoneDeliverPark extends LinearOpMode {
             robot.pickerArmServo.setPosition(robot.SERVO0);
             encoderStrafe(0.3, 72, 10, false);
             gyroDrive(0, 0.1, false);
-            encoderDrive(0.2, 14.5, 14.5, 4);
+            encoderDrive(0.2, 12.5, 12.5, 4);
             robot.pickerArmServo.setPosition(robot.SERVO90);
             sleep(1000);
-            encoderDrive(0.2, -14, -14, 4);
+            encoderDrive(0.2, -13, -13, 4);
             encoderStrafe(0.4, 75.25,70 , true);
             robot.pickerArmServo.setPosition(robot.SERVO0);
             //sleep(500);
             encoderStrafe(0.4, 20, 10, false);
+
         } else if (skystonePositon == "Skystone Pos. 3"){
             encoderDrive(0.2, -10, -10, 10);
             telemetry.addData("Skystone Position", skystonePositon);
             encoderStrafe(0.4, 55, 10, true);
             robot.pickerArmServo.setPosition(robot.SERVO0);
-            encoderStrafe(0.3, 76, 10, false);
+            strafeCorrection(0.3,70,6,false);
+            // encoderStrafe(0.3, 73, 10, false);//76
             gyroDrive(0, 0.1, false);
-            encoderDrive(0.2, 14.5, 14.5, 4);
-            //robot.pickerArmServo.setPosition(robot.SERVO90);
-            //sleep(1000);
+            sleep(500);
+            encoderDrive(0.2, 10, 10, 4);
+            robot.pickerArmServo.setPosition(robot.SERVO90);
+            sleep(500);
             encoderDrive(0.2, -14.1, -14.1, 4);
             encoderStrafe(0.4, 77,8 , true);
             robot.pickerArmServo.setPosition(robot.SERVO0);
             //sleep(500);
-            encoderStrafe(0.1, 21, 10, false);
+            encoderStrafe(0.4, 21, 10, false);
 
         }
 
@@ -699,6 +702,85 @@ public class RedAutoDriveFrontSkystoneDeliverPark extends LinearOpMode {
             robot.leftFrontDrive.setPower(strafingSpeed);
             robot.rightFrontDrive.setPower(strafingSpeed);
             robot.leftBackDrive.setPower(strafingSpeed);
+            robot.rightBackDrive.setPower(strafingSpeed);
+
+            // This while loop is NECESSARY to keep the motor running to its position
+            while (opModeIsActive() &&
+                    (runtime.seconds() < timeoutS) &&
+                    (robot.leftBackDrive.isBusy() && robot.rightBackDrive.isBusy())) {
+
+                // Display it for the driver.
+                telemetry.addData("Path1", "Running to %7d :%7d", newLeftBackTarget, newRightBackTarget);
+                telemetry.addData("Path2", "Running at %7d :%7d",
+                        robot.leftBackDrive.getCurrentPosition(),
+                        robot.rightBackDrive.getCurrentPosition());
+                telemetry.update();
+            }
+
+            // Stop all motion;
+            robot.leftBackDrive.setPower(0);
+            robot.rightBackDrive.setPower(0);
+            robot.leftFrontDrive.setPower(0);
+            robot.rightFrontDrive.setPower(0);
+
+            // Turn off RUN_TO_POSITION
+            robot.leftBackDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+            robot.rightBackDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+            robot.leftFrontDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+            robot.rightFrontDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
+            // optional pause after each move
+            //sleep(250);
+        }
+    }
+
+    public void strafeCorrection(double strafingSpeed, double inches, int timeoutS, boolean directionRight) {
+        //  left is false, right is true
+        int newLeftFrontTarget;
+        int newRightFrontTarget;
+        int newLeftBackTarget;
+        int newRightBackTarget;
+
+        if (opModeIsActive()) {
+
+            //Reset encoders to make sure the encoders start at 0
+            robot.leftBackDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+            robot.rightBackDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+            robot.leftFrontDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+            robot.rightFrontDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+
+            if (!directionRight) {
+                newLeftFrontTarget = robot.leftFrontDrive.getCurrentPosition() + (int) (-inches * robot.STRAFING_COUNTS_PER_INCH);
+                newRightBackTarget = robot.rightBackDrive.getCurrentPosition() + (int) (-inches * robot.STRAFING_COUNTS_PER_INCH);
+                newLeftBackTarget = robot.leftBackDrive.getCurrentPosition() + (int) (inches * robot.STRAFING_COUNTS_PER_INCH);
+                newRightFrontTarget = robot.rightFrontDrive.getCurrentPosition() + (int) (inches * robot.STRAFING_COUNTS_PER_INCH);
+            } else {
+                newLeftFrontTarget = robot.leftFrontDrive.getCurrentPosition() + (int) (inches * robot.STRAFING_COUNTS_PER_INCH);
+                newRightBackTarget = robot.rightBackDrive.getCurrentPosition() + (int) (inches * robot.STRAFING_COUNTS_PER_INCH);
+                newLeftBackTarget = robot.leftBackDrive.getCurrentPosition() + (int) (-inches * robot.STRAFING_COUNTS_PER_INCH);
+                newRightFrontTarget = robot.rightFrontDrive.getCurrentPosition() + (int) (-inches * robot.STRAFING_COUNTS_PER_INCH);
+            }
+            telemetry.addData("current Postion", robot.leftBackDrive.getCurrentPosition());
+
+            robot.leftFrontDrive.setTargetPosition(newLeftFrontTarget);
+            robot.rightFrontDrive.setTargetPosition(newRightFrontTarget);
+            robot.leftBackDrive.setTargetPosition(newLeftBackTarget);
+            robot.rightBackDrive.setTargetPosition(newRightBackTarget);
+
+            telemetry.addData("NewLeftBackTarget", newLeftBackTarget);
+            telemetry.update();
+            //sleep(2000);
+
+            robot.leftFrontDrive.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            robot.rightFrontDrive.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            robot.leftBackDrive.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            robot.rightBackDrive.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+            runtime.reset();
+
+            robot.leftFrontDrive.setPower(strafingSpeed);
+            robot.rightFrontDrive.setPower(strafingSpeed);
+            robot.leftBackDrive.setPower(strafingSpeed + 0.01);
             robot.rightBackDrive.setPower(strafingSpeed);
 
             // This while loop is NECESSARY to keep the motor running to its position

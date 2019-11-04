@@ -30,6 +30,7 @@
 package org.firstinspires.ftc.teamcode.JUNK.Archives;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.util.ElapsedTime;
@@ -88,7 +89,7 @@ import static org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocaliz
 
 
 @Autonomous(name="AutoDriveSkystoneDeliverPark",group= "Skystone" )
-//@Disabled
+@Disabled
 public class AutoDriveSkystoneDeliverPark extends LinearOpMode {
 
     /* Declare OpMode member. */

@@ -1,10 +1,12 @@
 package org.firstinspires.ftc.teamcode.PreSeasonTests.FrogForceTraining;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 
 import org.firstinspires.ftc.teamcode.PreSeasonTests.HardwarePushbot;
+@Disabled
 
 @Autonomous(name="EncoderTest2",group= "Example" )
 public class EncoderTest2 extends LinearOpMode {

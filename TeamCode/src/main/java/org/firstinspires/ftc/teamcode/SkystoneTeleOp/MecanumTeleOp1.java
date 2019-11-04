@@ -29,36 +29,35 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package org.firstinspires.ftc.teamcode;
+package org.firstinspires.ftc.teamcode.SkystoneTeleOp;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import com.qualcomm.robotcore.hardware.Servo;
-import com.qualcomm.robotcore.util.Range;
+import com.qualcomm.robotcore.hardware.DcMotor;
 
-
+import org.firstinspires.ftc.teamcode.HardwareSkystone;
 
 
 /**
  * This OpMode uses the common Pushbot hardware class to define the devices on the robot.
  * All device access is managed through the HardwarePushbot class.
  * The code is structured as a LinearOpMode
- *
+ * <p>
  * This particular OpMode executes a POV Game style Teleop for a PushBot
  * In this mode the left stick moves the robot FWD and back, the Right stick turns left and right.
  * It raises and lowers the claw using the Gampad Y and A buttons respectively.
  * It also opens and closes the claws slowly using the left and right Bumper buttons.
- *
+ * <p>
  * Use Android Studios to Copy this Class, and Paste it into your team's code folder with a new name.
  * Remove or comment out the @Disabled line to add this opmode to the Driver Station OpMode list
  */
 
-@TeleOp(name="MecanumTeleOp1", group="Preseason")
+@TeleOp(name = "MecanumTeleOp1", group = "TeleOp")
 //@Disabled
 public class MecanumTeleOp1 extends LinearOpMode {
 
     /* Declare OpMode members. */
-    HardwareSkystone robot           = new HardwareSkystone();   // Use a Pushbot's hardware
+    HardwareSkystone robot = new HardwareSkystone();   // Use a Pushbot's hardware
 
     // public Servo servoRepositioning = null;
     // double          clawOffset      = 0;                       // Servo mid position
@@ -68,6 +67,8 @@ public class MecanumTeleOp1 extends LinearOpMode {
     boolean bCurrentState = false, bPrevState = false;    // current and previous boolean values for b button gamepad 2
     boolean yCurrentState = false, yPrevState = false;    // current and previous boolean values for y button gamepad 2
     boolean aCurrentState = false, aPrevState = false;    // current and previous boolean values for a button gamepad 1
+    boolean stopCurrentState = false, stopPrevState = false;
+    private double targetPosition = 0;
 
     @Override
     public void runOpMode() {
@@ -88,7 +89,6 @@ public class MecanumTeleOp1 extends LinearOpMode {
 
             //variable that assigns what joystick will give the power for vertical movement
             double cascadingHorizontalPower = gamepad2.right_stick_x;
-            double cascadingVerticalPower = gamepad2.left_stick_y;
 
             //variable that assigns what trigger will give power to each compliant wheel
             double rightCollectorPower = gamepad1.left_trigger;
@@ -101,7 +101,7 @@ public class MecanumTeleOp1 extends LinearOpMode {
 
 
             //sets the power of the motor controlling the vertical movement
-            robot.cascadingVerticalArm.setPower(cascadingVerticalPower);
+
             robot.cascadingHorizontalArm.setPower(cascadingHorizontalPower);
 
             //sets the power of the motors controlling the compliant wheels
@@ -184,9 +184,69 @@ public class MecanumTeleOp1 extends LinearOpMode {
             }
             x2PrevState = x2CurrentState;
 
+            // press y to make picker claw to release or grab
+            stopCurrentState = gamepad2.left_bumper;
+            if (stopCurrentState && (stopCurrentState != stopPrevState)) {
+                RobotState.setIsManual(!RobotState.getIsManual());
+                telemetry.addData("Is Manual", RobotState.getIsManual());
+                telemetry.update();
+            }
+            stopPrevState = stopCurrentState;
+
+            if (RobotState.getIsManual()) {
+                double cascadingVerticalPower = gamepad2.left_stick_y;
+                robot.cascadingVerticalArm.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+                robot.cascadingVerticalArm.setPower(cascadingVerticalPower);
+            } else {
+                if (gamepad2.dpad_up) {
+                    targetPosition = targetPosition + 2.5;
+                    cascadeMove(targetPosition, 0.4);
+                } else if(gamepad2.dpad_down) {
+                    targetPosition = 0;
+                    cascadeMove(0, 0.4);
+                }
+                if (!RobotState.isCurrentlyMoving()) {
+                    stallCascade(0.1, robot.cascadingVerticalArm.getCurrentPosition());
+                }
+            }
+
+
         }
     }
 
+    private void stallCascade(final double stallPower, final double stallPosition) {
+        robot.cascadingVerticalArm.setTargetPosition((int) stallPosition);
+        robot.cascadingVerticalArm.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        robot.cascadingVerticalArm.setPower(stallPower);
+    }
+
+
+    private void cascadeMove(double targetPosition, double speed) {
+        if (opModeIsActive()) {
+
+            targetPosition = targetPosition * robot.VERTICAL_CASCADEPULLY_COUNTS_PER_INCH;
+
+            robot.cascadingVerticalArm.setTargetPosition((int) targetPosition);
+            robot.cascadingVerticalArm.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            RobotState.setCurrentlyMoving(true);
+            robot.cascadingVerticalArm.setPower(Math.abs(speed));
+
+            while (opModeIsActive() &&
+                    (robot.cascadingVerticalArm.isBusy())) {
+
+                // Display it for the driver.
+                telemetry.addData("Target Position", targetPosition);
+                telemetry.addData("Current Position", robot.cascadingVerticalArm.getCurrentPosition());
+                telemetry.update();
+            }
+
+            robot.cascadingVerticalArm.setPower(0);
+            robot.cascadingVerticalArm.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
+            RobotState.setCurrentlyMoving(false);
+
+        }
+    }
 
     // Easier to understand and make changes when considering turning and strafing right
     //This method is made to move the robot in all directions using the only two joysticks
@@ -200,8 +260,7 @@ public class MecanumTeleOp1 extends LinearOpMode {
         // Normalize the values so neither exceed +/- 1.0
         double max = Math.max(Math.max(Math.abs(leftBackPower), Math.abs(rightBackPower)), Math.max(Math.abs(rightFrontPower), Math.abs(leftFrontPower)));
 
-        if (max > 1.0)
-        {
+        if (max > 1.0) {
             leftFrontPower /= max;
             rightFrontPower /= max;
             leftBackPower /= max;

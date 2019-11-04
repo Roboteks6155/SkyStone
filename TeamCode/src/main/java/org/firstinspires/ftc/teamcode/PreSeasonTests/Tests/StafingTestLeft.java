@@ -12,8 +12,8 @@ import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
 import org.firstinspires.ftc.teamcode.HardwareSkystone;
 
 //@Disabled
-@Autonomous(name="StrafingTest",group= "Example" )
-public class StafingTest extends LinearOpMode {
+@Autonomous(name="StrafingTestLeft",group= "Test" )
+public class StafingTestLeft extends LinearOpMode {
 
     /* Declare OpMode member. */
     HardwareSkystone robot = new HardwareSkystone();
@@ -27,7 +27,7 @@ public class StafingTest extends LinearOpMode {
         robot.init(hardwareMap);
 
         waitForStart();
-        encoderStrafe(0.3,60,10,false);
+        encoderStrafe(0.3, 60, 10, false);
     }
 
     public void encoderStrafe(double strafingSpeed, double inches, int timeoutS, boolean directionRight) {
@@ -76,7 +76,7 @@ public class StafingTest extends LinearOpMode {
 
             robot.leftFrontDrive.setPower(strafingSpeed);
             robot.rightFrontDrive.setPower(strafingSpeed);
-            robot.leftBackDrive.setPower(strafingSpeed);
+            robot.leftBackDrive.setPower(strafingSpeed + 0.02);
             robot.rightBackDrive.setPower(strafingSpeed);
 
             // This while loop is NECESSARY to keep the motor running to its position

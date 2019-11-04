@@ -1,16 +1,3 @@
-/*****************************************************************************************************
-
- Event: FTC Skystone 2019
- Author : Team Roboteks # 6155
- OpMode Name: RedAutoDriveFrontDeliverPark
- File Name: RedAutoDriveFrontDeliverPark.java
- Created on: 10-3-19
- Last Modified on: 10-20-19
- OpMode Description: This OpMode is for Autonomous drive where the robot starts facing the Skystones, senses
- and picks the first Skystone, delivers it, strafes back to the second skystone, picks it, delivers it, then
- parks under the Skybridge
-
- *****************************************************************************************************/
 /* Copyright (c) 2019 FIRST. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
@@ -40,7 +27,7 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package org.firstinspires.ftc.teamcode.SkystoneRedAlliance;
+package org.firstinspires.ftc.teamcode.SkystoneBlueAlliance;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
@@ -99,9 +86,9 @@ import static org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocaliz
  */
 
 
-@Autonomous(name="RedAutoDriveFrontSkystoneDeliverPark",group= "RedSkystone" )
+@Autonomous(name="BlueAutoDriveFrontSkystoneDeliverParkPhone",group= "BlueSkystone" )
 //@Disabled
-public class RedAutoDriveFrontSkystoneDeliverPark extends LinearOpMode {
+public class BlueAutoDriveFrontSkystoneDeliverParkPhone extends LinearOpMode {
 
     /* Declare OpMode member. */
     HardwareSkystone robot = new HardwareSkystone();
@@ -201,7 +188,7 @@ public class RedAutoDriveFrontSkystoneDeliverPark extends LinearOpMode {
         /**
          * We also indicate which camera on the RC we wish to use.
          */
-        parameters.cameraName = robot.webcamName;
+        //parameters.cameraName = robot.webcamName;
 
         //  Instantiate the Vuforia engine
         vuforia = ClassFactory.getInstance().createVuforia(parameters);
@@ -377,7 +364,7 @@ public class RedAutoDriveFrontSkystoneDeliverPark extends LinearOpMode {
         robot.rightFrontDrive.setPower(0.0);
 */
 // make robot move forward using encoders
-        encoderDrive(0.2,16,16,5);
+        encoderDrive(0.2,20,20,5);
 
         // Note: To use the remote camera preview:
         // AFTER you hit Init on the Driver Station, use the "options menu" to select "Camera Stream"
@@ -423,58 +410,92 @@ public class RedAutoDriveFrontSkystoneDeliverPark extends LinearOpMode {
 
                 telemetry.addData("Skystone X Offset", skystoneXOffset);
 
+
+
                 // express the rotation of the robot in degrees.
                 Orientation rotation = Orientation.getOrientation(lastLocation, EXTRINSIC, XYZ, DEGREES);
                 telemetry.addData("Rot (deg)", "{Roll, Pitch, Heading} = %.0f, %.0f, %.0f", rotation.firstAngle, rotation.secondAngle, rotation.thirdAngle);
 
-                if (skystoneXOffset<0) {
+                /************************************************************************
+                 * For if the Skystone is in the 1st Position
+                 *************************************************************************/
+                if (skystoneXOffset>0) {
+
+                    //assigning the variable skystonePositon to "Skystone Pos. 1"
                     skystonePositon = "Skystone Pos. 1";
+
+                    //Telemety to display on the DS which position the Skystone is in
                     telemetry.addData("Skystone Position", skystonePositon);
-                    encoderDrive(0.3,-skystoneYOffset -1.1,-skystoneYOffset -1.1,3);
-                    /*robot.rightFrontDrive.setPower(-0.3);
-                    robot.leftBackDrive.setPower(-0.3);
-                    robot.rightBackDrive.setPower(0.3);
-                    robot.leftFrontDrive.setPower(0.3);
-                    sleep(300);
-                    robot.rightFrontDrive.setPower(0);
-                    robot.leftBackDrive.setPower(0);
-                    robot.rightBackDrive.setPower(0);
-                    robot.leftFrontDrive.setPower(0);
-                    sleep(2000);*/
-                    encoderStrafe(0.2,-skystoneXOffset - 1,10,true);
-                    robot.pickerArmServo.setPosition(robot.SERVO90);
+
+                    //NECESSARY for Vuforia to pick up the Skystone
                     sleep(1000);
+
+                    //Move up to the Skystone
+                    encoderDrive(0.3,-skystoneYOffset - 9.6,-skystoneYOffset -9.6,3);
+
+                    //Strafe left to align with the Skystone
+                    encoderStrafe(0.2, skystoneXOffset+3,10,false);
+
+                    //Lower the arm to hold the Skystone
+                    robot.pickerArmServo.setPosition(robot.SERVO90);
+                    sleep(750);
+
                     break;
-                } else if (skystoneXOffset>0) {
+                }
+                /************************************************************************
+                  For if the Skystone is in the 2nd Position
+                 *************************************************************************/
+                else if (skystoneXOffset<0) {
+
+                    //assigning the variable skystonePositon to "Skystone Pos. 2"
                     skystonePositon = "Skystone Pos. 2";
+
+                    //Telemety to display on the DS which position the Skystone is in
                     telemetry.addData("Skystone Position", skystonePositon);
-                    encoderDrive(0.3,-skystoneYOffset -1,-skystoneYOffset -1,3);
-                    /*robot.rightFrontDrive.setPower(-0.3);
-                    robot.leftBackDrive.setPower(-0.3);
-                    robot.rightBackDrive.setPower(0.3);
-                    robot.leftFrontDrive.setPower(0.3);
-                    sleep(300);
-                    robot.rightFrontDrive.setPower(0);
-                    robot.leftBackDrive.setPower(0);
-                    robot.rightBackDrive.setPower(0);
-                    robot.leftFrontDrive.setPower(0);
-                    sleep(2000);*/
-                    encoderStrafe(0.2, skystoneXOffset-0,10,false);
+
+                    //NECESSARY for Vuforia to pick up the Skystone
+                    sleep(1000);
+
+                    //Move forward towards the Skystone
+                    encoderDrive(0.3,-skystoneYOffset -9.6,-skystoneYOffset -9.6,3);
+
+                    //Strafe right to align with the Skystone
+                    encoderStrafe(0.2, -skystoneXOffset-2,10,true);
+
+                    //rotate the arm down to lock the Skystone
                     robot.pickerArmServo.setPosition(robot.SERVO90);
                     sleep(1000);
+
                     break;
                 }
 
             }
+
+            /************************************************************************
+             For if the Skystone is in the 3rd Position
+            *************************************************************************/
             else {
+
+                //assigning the variable skystonePositon to "Skystone Pos. 2"
                 skystonePositon = "Skystone Pos. 3";
+
+                //Telemety to display on the DS which position the Skystone is in
                 telemetry.addData("Skystone Position",skystonePositon );
-                encoderDrive(0.3,13,13,3);
-                encoderStrafe(0.2,12,3,false);
+
+                //NECESSARY for Vuforia to pick up the Skystone
+                sleep(1000);
+
+                //Move forward towards the Skystone
+                encoderDrive(0.3,10.5,10.5,3);
+
+                //Strafe right to align with the Skystone
+                encoderStrafe(0.2,9.5,3,true);
+
+                //rotate the arm down to lock the Skystone
                 robot.pickerArmServo.setPosition(robot.SERVO90);
                 sleep(500);
 
-                break;
+           break;
             }
             telemetry.update();
         }
@@ -485,56 +506,123 @@ public class RedAutoDriveFrontSkystoneDeliverPark extends LinearOpMode {
         if (skystonePositon == "Skystone Pos. 1"){
             encoderDrive(0.2,-13,-13,10);
             telemetry.addData("Skystone Position",skystonePositon );
-            //sleep(100);
-            encoderStrafe(0.4,48,10,true);
-            /*robot.rightFrontDrive.setPower(-0.3);
-            robot.leftBackDrive.setPower(-0.3);
-            robot.rightBackDrive.setPower(0.3);
-            robot.leftFrontDrive.setPower(0.3);
-            sleep(2000);*/
+
+            //Strafe left into the Building Zone
+            encoderStrafe(0.4,45,10,false);
+
+            //Raise arm to release the Skystone
             robot.pickerArmServo.setPosition(robot.SERVO0);
-            encoderStrafe(0.3, 68, 10,false);
-            gyroDrive(0,0.1,false);
-            encoderDrive(0.2,14,14,4);
+
+            //gyroDrive(0,0.2,false);
+
+            // Strafe right to align with 4th position Skystone
+            encoderStrafe(0.3, 66, 10,true);
+
+            //Turning correction after drifting
+            //gyroDrive(0,0.1,false);
+
+            sleep(1000);
+
+            //Move forward to the Skystone
+            encoderDrive(0.2,12,12,4);
+
+            //Lower arm on to the Skystone to grab it
             robot.pickerArmServo.setPosition(robot.SERVO90);
             sleep(500);
-            encoderDrive(0.2,-17,-17,4);
-            encoderStrafe(0.3, 75, 10,true);
+
+            //Drive back to pass the Skybridge
+            encoderDrive(0.2,-15,-15,4);
+
+            //Strafe left back into the the Building Zone
+            encoderStrafe(0.3, 70, 10,false);
+
+            //Raise arm to release the Skystone
             robot.pickerArmServo.setPosition(robot.SERVO0);
             sleep(100);
-            encoderStrafe(0.4, 25, 10,false);
+
+            //Strafe right to park under the Skybridge
+            encoderStrafe(0.4, 24, 4,true);
+
         }
 
         else if (skystonePositon == "Skystone Pos. 2") {
+
+            //Move back to to pass the Skybridge
             encoderDrive(0.2, -10, -10, 10);
+
             telemetry.addData("Skystone Position", skystonePositon);
-            encoderStrafe(0.4, 50, 10, true);
+
+            //Strafe left to the Bulding Zone
+            encoderStrafe(0.4, 50, 10, false);
+
+            //Lift the arm off the Skystone to release it
             robot.pickerArmServo.setPosition(robot.SERVO0);
-            encoderStrafe(0.3, 72, 10, false);
+
+            //Strafe to the right to align with 5th position Skystone
+            encoderStrafe(0.3, 71.5, 10, true);
+
+            //Correct itself after drifting
             gyroDrive(0, 0.1, false);
-            encoderDrive(0.2, 14.5, 14.5, 4);
+
+            //Move forward towards the Skytone
+            encoderDrive(0.2, 6, 6, 4);
+
+            //Lower arm on to the Skystone to lock it in place
             robot.pickerArmServo.setPosition(robot.SERVO90);
             sleep(1000);
+
+            //Move back to clear the Skybridge
             encoderDrive(0.2, -14, -14, 4);
-            encoderStrafe(0.4, 75.25,70 , true);
+
+            //Strafe left into the Building Zone
+            encoderStrafe(0.4, 75.25,70 , false);
+
+            //Raise the arm to release the Skystone
             robot.pickerArmServo.setPosition(robot.SERVO0);
             //sleep(500);
-            encoderStrafe(0.4, 20, 10, false);
+
+            //Strafe right to park under the Skystone
+            encoderStrafe(0.4, 20, 10, true);
+
         } else if (skystonePositon == "Skystone Pos. 3"){
+
+            //Move back to clear the Skysbridge
             encoderDrive(0.2, -10, -10, 10);
+
+            //Displays to the DS what postion the skystone was in
             telemetry.addData("Skystone Position", skystonePositon);
-            encoderStrafe(0.4, 55, 10, true);
+
+            //Strafe left into the Building Zone
+            encoderStrafe(0.4, 55, 10, false);
+
+            //Raise the arm to release the Skystone
             robot.pickerArmServo.setPosition(robot.SERVO0);
-            encoderStrafe(0.3, 76, 10, false);
+
+            //Strafe right to align with the 5th position
+            encoderStrafe(0.3, 69, 10, true);
+
+            //Correct after drifting from the strafe
             gyroDrive(0, 0.1, false);
-            encoderDrive(0.2, 14.5, 14.5, 4);
-            //robot.pickerArmServo.setPosition(robot.SERVO90);
-            //sleep(1000);
-            encoderDrive(0.2, -14.1, -14.1, 4);
-            encoderStrafe(0.4, 77,8 , true);
+
+            //Move forward towards the Skystone
+            encoderDrive(0.2, 6, 6, 4);
+
+            //Lower arm down on to the Skystone to lock it in place
+            robot.pickerArmServo.setPosition(robot.SERVO90);
+            sleep(1000);
+
+            //Move back to clear the Skybridge
+            encoderDrive(0.2, -10, -10, 4);
+
+            //Strafe left to the Building Zone
+            encoderStrafe(0.4, 77,8 , false);
+
+            //Raise arm to release Skystone
             robot.pickerArmServo.setPosition(robot.SERVO0);
             //sleep(500);
-            encoderStrafe(0.1, 21, 10, false);
+
+            //strafe right to park under the Skybridge
+            encoderStrafe(0.4, 21, 10, true);
 
         }
 

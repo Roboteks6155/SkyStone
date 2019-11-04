@@ -173,7 +173,7 @@ public class VuforiaSkystoneDetector {
         // This can be used for generic target-centric approach algorithms
         stoneTarget.setLocation(OpenGLMatrix
                 .translation(0, 0, stoneZ)         //changed thirdAngle to zero becuase skystone faces Red Alliance
-                .multiplied(Orientation.getRotationMatrix(EXTRINSIC, XYZ, DEGREES, 90, 0, 0))); //
+                .multiplied(Orientation.getRotationMatrix(EXTRINSIC, XYZ, DEGREES, 90, 0, -90))); //
 
         //Set the position of the bridge support targets with relation to origin (center of field)
         blueFrontBridge.setLocation(OpenGLMatrix

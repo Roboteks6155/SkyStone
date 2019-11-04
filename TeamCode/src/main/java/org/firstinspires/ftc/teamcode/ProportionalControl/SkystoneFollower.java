@@ -2,9 +2,9 @@ package org.firstinspires.ftc.teamcode.ProportionalControl;
 
 public class SkystoneFollower {
 
-    private double strafeFactor = 0.04, fwdFactor = 0.02;
+    private double strafeFactor = 0.03, fwdFactor = 0.02;               //  was 0.04   &  0.02
     /*---------------------------------------------------------------------------------------------*/
-    private double xTolerance = 2.5, yTolerance = 2.5, xTarget = 0.0, yTarget = 0.0;
+    private double xTolerance = 0.5, yTolerance = 0.5, xTarget = 0.0, yTarget = 0.0;     // was 1.0  &  1.0
     private boolean withinXTolerance = false, withinYTolerance = false;
 
     /**

@@ -37,9 +37,9 @@ import org.firstinspires.ftc.teamcode.HardwareSkystone;
  * Remove or comment out the @Disabled line to add this opmode to the Driver Station OpMode list
  */
 
-@Autonomous(name="AutoDriveStoneIntake", group="Example")
+@Autonomous(name="RedAutoDriveStrafeLeftPark", group="RedSkystone")
 //@Disabled
-public class AutoDriveStoneIntake extends LinearOpMode {
+public class RedAutoDriveStrafeLeftPark extends LinearOpMode {
 
     /* Declare OpMode members. */
 
@@ -93,89 +93,8 @@ public class AutoDriveStoneIntake extends LinearOpMode {
         // Wait for the game to start (driver presses PLAY)
         waitForStart();
 
-        robot.rightCollectorServo.setPosition(0);
-        robot.leftCollectorServo.setPosition(0.48);
-        sleep(2000);
-        encoderStrafe(0.3,37,5,false); // Strafe to the stones
-
-        // Step through each leg of the path,
-        // Note: Reverse movement is obtained by setting a negative distance (not speed)
-        //encoderDrive(DRIVE_SPEED,  -24.0,  -24.0, 4.0);  // S1: Backward 18 Inches with 5 Sec timeout
-
-
-
-
-
-
-
-        //move forward 5 inches
-        encoderDrive(0.2,  -5.5,  -5.5, 2.0);
-
-
-        //intake stone
-        //right collector turns left and left collector turns right
-        robot.rightCollectorMotor.setPower(-0.5);
-        robot.leftCollectorMotor.setPower(0.5);
-        sleep(2500);
-
-        //stop both collector motors
-        robot.rightCollectorMotor.setPower(0);
-        robot.leftCollectorMotor.setPower(0);
-
-        //strafe left
-        encoderStrafe(0.3,14,5,true);
-
-        //move to deliver stone
-        encoderDrive(DRIVE_SPEED,  50.0,  50.0, 7.0);  // S1: Forward 29 Inches with 5 Sec timeout
-
-
-        gyroDrive(-90,0.2,false);
-
-        //drop stone
-        //right collector turns right and left collector turns left
-        robot.rightCollectorMotor.setPower(0.5);
-        robot.leftCollectorMotor.setPower(-0.5);
-        sleep(3000);
-
-
-        gyroDrive(0,0.2,true);
-
-        encoderDrive(0.2, -60 ,  -60.0, 2.0);
-
-
-
-        /*encoderDrive(TURN_SPEED,   12, -12, 4.0);  // S2: Turn Right 12 Inches with 4 Sec timeout
-        encoderDrive(DRIVE_SPEED, -29.0, -29.0, 5.0);  // S3: Reverse 29 Inches with 5 Sec timeout
-
-        //Strafe left
-        robot.leftFrontDrive.setPower(-0.4);
-        robot.rightFrontDrive.setPower(0.4);
-        robot.leftBackDrive.setPower(0.4);
-        robot.rightBackDrive.setPower(-0.4);
-        sleep(2000);
-
-        robot.leftFrontDrive.setPower(0);
-        robot.rightFrontDrive.setPower(0);
-        robot.leftBackDrive.setPower(0);
-        robot.rightBackDrive.setPower(0);
-        //Strafe right
-        robot.leftFrontDrive.setPower(0.4);
-        robot.rightFrontDrive.setPower(-0.4);
-        robot.leftBackDrive.setPower(-0.4);
-        robot.rightBackDrive.setPower(0.4);
-        sleep(2000);
-
-        robot.leftFrontDrive.setPower(0);
-        robot.rightFrontDrive.setPower(0);
-        robot.leftBackDrive.setPower(0);
-        robot.rightBackDrive.setPower(0);
-
-        //robot.leftClaw.setPosition(1.0);            // S4: Stop and close the claw.
-        //robot.rightClaw.setPosition(0.0);
-        //sleep(1000);     // pause for servos to move
-*/
-        //telemetry.addData("Path", "Complete");
-        //telemetry.update();
+        //Making robot strafe left to park under the Skybridge
+        encoderStrafe(0.3,9,2, false);
     }
 
     /*
